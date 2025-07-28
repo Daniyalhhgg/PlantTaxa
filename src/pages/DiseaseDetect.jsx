@@ -1,18 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 
-// Animation
+// Dynamic API base URL
+const API = import.meta.env.VITE_API_BASE_URL;
+
+// Animations
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px);}
   to { opacity: 1; transform: translateY(0);}
 `;
 
-// Scanning animation
 const scanAnim = keyframes`
   0% { top: 0; }
   100% { top: 100%; }
 `;
 
+// Styled components...
 const Container = styled.div`
   font-family: 'Segoe UI', sans-serif;
   min-height: 100vh;
@@ -259,7 +262,7 @@ const DiseaseDetect = () => {
       const formData = new FormData();
       formData.append("image", imageFile);
 
-      const res = await fetch("http://localhost:5000/api/disease/upload", {
+      const res = await fetch(`${API}/api/disease/upload`, {
         method: "POST",
         body: formData,
       });
