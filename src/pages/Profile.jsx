@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 const Background = styled.div`
   font-family: 'Segoe UI', sans-serif;
   min-height: 100vh;
@@ -168,7 +170,7 @@ const Profile = () => {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
 
-      const res = await fetch("http://localhost:5000/api/profile", {
+      const res = await fetch(`${API_BASE_URL}/api/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -196,7 +198,7 @@ const Profile = () => {
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
-      const res = await fetch("http://localhost:5000/api/profile", {
+      const res = await fetch(`${API_BASE_URL}/api/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
