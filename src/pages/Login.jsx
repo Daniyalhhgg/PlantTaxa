@@ -1,10 +1,12 @@
-// src/pages/Login.js
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { setToken } from "../utils/auth";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+// ✅ Optional: Move API base to .env file for easier management
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://upbeat-rejoicing-production.up.railway.app";
 
 const Wrapper = styled.div`
   background: url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6") center/cover no-repeat;
@@ -74,7 +76,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
+  const validateEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -86,20 +89,27 @@ const Login = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // ✅ include cookies/session
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("Unexpected response format from server.");
+      }
+
       if (!res.ok) throw new Error(data.msg || "Login failed");
 
       setToken(data.token);
       toast.success("Login successful!");
       setTimeout(() => navigate("/dashboard"), 1500);
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || "Login failed.");
     }
   };
 
@@ -107,8 +117,17 @@ const Login = () => {
     <Wrapper>
       <Card>
         <h2>Login to PlantTaxa 🌿</h2>
-        <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <Input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <Button onClick={handleLogin}>Login</Button>
         <p style={{ marginTop: "12px" }}>
           Don’t have an account? <Link to="/register">Register</Link>
