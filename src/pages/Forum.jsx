@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import { motion } from "framer-motion";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Named import
 
-const API = import.meta.env.VITE_API_BASE_URL;
-
+// Themes (WhatsApp-like green + white/dark bg)
 const lightTheme = {
   bg: "#e5ddd5",
   text: "#111",
@@ -25,10 +24,11 @@ const darkTheme = {
   replyBorder: "#333",
 };
 
+// Container holding everything, max width like WhatsApp Web
 const Container = styled.div`
-  max-width: 1050px;
+  max-width: 1050px;   /* wider */
   margin: 0 auto;
-  height: 80vh;
+  height: 80vh;        /* shorter */
   display: flex;
   flex-direction: column;
   background: ${({ theme }) => theme.bg};
@@ -37,13 +37,14 @@ const Container = styled.div`
   padding: 0 12px;
 `;
 
+// Header bar with title and toggle
 const Header = styled.header`
-  height: 50px;
+  height: 50px;        /* keep header height same */
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #ccc;
-  background: ${({ theme }) => (theme.bg === "#121212" ? "#202c33" : "#f8f8f8")};
+  background: ${({ theme }) => (theme === darkTheme ? "#202c33" : "#f8f8f8")};
   padding: 0 16px;
   font-weight: 700;
   font-size: 1.3rem;
@@ -60,6 +61,7 @@ const ToggleModeBtn = styled.button`
   font-size: 1.1rem;
   padding: 6px 12px;
   border-radius: 6px;
+  transition: background-color 0.2s ease;
 
   &:hover {
     background: ${({ theme }) => theme.border};
@@ -67,6 +69,7 @@ const ToggleModeBtn = styled.button`
   }
 `;
 
+// Message list area, scrollable, flex column-reverse to start bottom
 const MessageList = styled.div`
   flex: 1;
   padding: 20px 16px;
@@ -74,10 +77,11 @@ const MessageList = styled.div`
   display: flex;
   flex-direction: column-reverse;
   gap: 12px;
-  background: ${({ theme }) => (theme.bg === "#121212" ? "#111b21" : "#ece5dd")};
+  background: ${({ theme }) => (theme === darkTheme ? "#111b21" : "#ece5dd")};
   border-radius: 0 0 10px 10px;
 `;
 
+// Message bubble container aligns left or right
 const Bubble = styled(motion.div)`
   max-width: 65%;
   background-color: ${({ isSelf, theme }) =>
@@ -90,6 +94,7 @@ const Bubble = styled(motion.div)`
   font-size: 0.95rem;
   word-break: break-word;
 
+  /* Bubble tails using pseudo elements */
   &:after {
     content: "";
     position: absolute;
@@ -105,6 +110,7 @@ const Bubble = styled(motion.div)`
   }
 `;
 
+// Username and timestamp line inside bubble
 const MessageHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -114,6 +120,7 @@ const MessageHeader = styled.div`
   font-weight: 600;
 `;
 
+// Reply preview bar above bubble text
 const ReplyPreview = styled.div`
   background: ${({ theme }) => theme.replyBg};
   border-left: 4px solid ${({ theme }) => theme.replyBorder};
@@ -122,8 +129,10 @@ const ReplyPreview = styled.div`
   border-radius: 4px;
   font-style: italic;
   color: ${({ theme }) => `${theme.text}aa`};
+  user-select: none;
 `;
 
+// Button group for reply/edit/delete
 const ActionGroup = styled.div`
   margin-top: 6px;
   display: flex;
@@ -137,21 +146,25 @@ const ActionBtn = styled.button`
   cursor: pointer;
   font-weight: 600;
   font-size: 0.85rem;
+  transition: color 0.25s ease;
 
   &:hover {
+    color: ${({ theme }) => "#128c7e"};
     text-decoration: underline;
   }
 `;
 
+// Input bar container fixed at bottom
 const InputWrapper = styled.form`
   border-top: 1px solid #ccc;
-  background: ${({ theme }) => (theme.bg === "#121212" ? "#202c33" : "#f8f8f8")};
+  background: ${({ theme }) => (theme === darkTheme ? "#202c33" : "#f8f8f8")};
   padding: 12px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
 `;
 
+// Input textarea with WhatsApp style
 const InputArea = styled.textarea`
   flex: 1;
   border: none;
@@ -160,8 +173,9 @@ const InputArea = styled.textarea`
   resize: none;
   font-size: 1rem;
   font-family: inherit;
-  background: ${({ theme }) => (theme.bg === "#121212" ? "#2a3942" : "#fff")};
+  background: ${({ theme }) => (theme === darkTheme ? "#2a3942" : "#fff")};
   color: ${({ theme }) => theme.text};
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.1);
 
   &:focus {
     outline: none;
@@ -169,6 +183,7 @@ const InputArea = styled.textarea`
   }
 `;
 
+// Send button green circle
 const SendBtn = styled.button`
   background: ${({ theme }) => theme.border};
   border: none;
@@ -177,7 +192,11 @@ const SendBtn = styled.button`
   height: 38px;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 20px;
+  transition: background-color 0.3s ease;
 
   &:hover {
     background-color: #128c7e;
@@ -189,6 +208,7 @@ const SendBtn = styled.button`
   }
 `;
 
+// Clear messages button styled as small text button
 const ClearBtn = styled.button`
   align-self: flex-start;
   margin: 10px 0;
@@ -198,6 +218,7 @@ const ClearBtn = styled.button`
   cursor: pointer;
   font-weight: 600;
   font-size: 0.9rem;
+  user-select: none;
 
   &:hover {
     text-decoration: underline;
@@ -227,12 +248,15 @@ const Forum = () => {
   }, []);
 
   useEffect(() => {
-    if (messageListRef.current) messageListRef.current.scrollTop = 0;
+    if (messageListRef.current) {
+      // Scroll to bottom (since flex-column-reverse, scrollTop = 0)
+      messageListRef.current.scrollTop = 0;
+    }
   }, [messages]);
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`${API}/api/forum`);
+      const res = await fetch("http://localhost:5000/api/forum");
       const data = await res.json();
       setMessages(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -245,8 +269,8 @@ const Forum = () => {
     if (!input.trim()) return;
 
     const url = editId
-      ? `${API}/api/forum/${editId}`
-      : `${API}/api/forum`;
+      ? `http://localhost:5000/api/forum/${editId}`
+      : "http://localhost:5000/api/forum";
     const method = editId ? "PUT" : "POST";
 
     try {
@@ -269,7 +293,7 @@ const Forum = () => {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`${API}/api/forum/${id}`, {
+      await fetch(`http://localhost:5000/api/forum/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -287,7 +311,10 @@ const Forum = () => {
     setReplyTo(msg.replyTo || null);
   };
 
-  const handleReply = (msg) => setReplyTo(msg);
+  const handleReply = (msg) => {
+    setReplyTo(msg);
+  };
+
   const cancelReply = () => setReplyTo(null);
 
   const handleClearMyMessages = () => {
@@ -378,6 +405,6 @@ const Forum = () => {
       </Container>
     </ThemeProvider>
   );
-};
+}; 
 
 export default Forum;
