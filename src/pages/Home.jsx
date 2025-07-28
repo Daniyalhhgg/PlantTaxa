@@ -3,8 +3,8 @@ import axios from "axios";
 import styled, { keyframes } from "styled-components";
 import { Link } from "react-router-dom";
 
-// --- API Key from .env ---
-const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+// --- API & Defaults ---
+const apiKey = "da43a500755e687710d089ea3b65877f";
 const defaultCities = ["Lahore", "Karachi", "Islamabad"];
 
 // --- Animations ---
@@ -139,11 +139,6 @@ const Home = () => {
   const [weatherData, setWeatherData] = useState([]);
 
   const fetchWeather = async (citiesToFetch) => {
-    if (!apiKey) {
-      console.error("❌ REACT_APP_WEATHER_API_KEY is missing in .env");
-      return;
-    }
-
     const results = await Promise.all(
       citiesToFetch.map(async (city) => {
         try {
