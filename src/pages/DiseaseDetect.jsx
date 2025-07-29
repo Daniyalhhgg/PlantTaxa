@@ -1,15 +1,13 @@
-// src/pages/DiseaseDetect.jsx
-import { useState } from "react";
-
+import { useState, useRef, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
+// Animation
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px);}
   to { opacity: 1; transform: translateY(0);}
 `;
 
+// Scanning animation
 const scanAnim = keyframes`
   0% { top: 0; }
   100% { top: 100%; }
@@ -68,6 +66,7 @@ const UploadBox = styled.label`
   max-width: 440px;
   cursor: pointer;
   text-align: center;
+  transition: box-shadow 0.3s, background 0.3s, border-color 0.3s;
   color: #eaffea;
   margin-bottom: 18px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.10);
@@ -75,10 +74,18 @@ const UploadBox = styled.label`
   &:hover {
     background: rgba(255,255,255,0.22);
     border-color: #66bb6a;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.13);
   }
 
   input {
     display: none;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 500;
+    letter-spacing: 0.2px;
   }
 `;
 
@@ -95,6 +102,7 @@ const Preview = styled.img`
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.32);
   border: 2px solid #b6ffb6;
+  display: block;
 `;
 
 const ScanOverlay = styled.div`
@@ -111,6 +119,9 @@ const ScanLine = styled.div`
   width: 100%;
   height: 7px;
   background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  opacity: 0.8;
+  border-radius: 3px;
+  box-shadow: 0 0 16px 4px #43e97b66;
   animation: ${scanAnim} 1.2s linear infinite;
 `;
 
@@ -124,15 +135,24 @@ const Button = styled.button`
   border-radius: 30px;
   font-size: 1.08rem;
   cursor: pointer;
+  box-shadow: 0 2px 12px rgba(67,233,123,0.10);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
 
-  &:hover {
+  &:hover, &:focus {
     background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+    color: #0e1e0e;
+    box-shadow: 0 4px 20px rgba(67,233,123,0.18);
   }
 
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
   }
+`;
+
+const CameraButton = styled(Button)`
+  margin-bottom: 10px;
 `;
 
 const ResultBox = styled.div`
@@ -145,13 +165,73 @@ const ResultBox = styled.div`
   color: #c8ffc8;
   font-size: 1.13rem;
   text-align: center;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.09);
+  border: 1.5px solid #a5d6a7;
+  animation: ${fadeIn} 0.7s;
 `;
+
+const CameraModalBackdrop = styled.div`
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+`;
+
+const CameraModalBox = styled.div`
+  background: #222;
+  padding: 24px 28px;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const CameraModal = ({ onCapture, onClose }) => {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    let stream;
+    navigator.mediaDevices.getUserMedia({ video: true }).then(s => {
+      stream = s;
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    });
+    return () => {
+      if (stream) stream.getTracks().forEach(track => track.stop());
+    };
+  }, []);
+
+  const handleCapture = () => {
+    const ctx = canvasRef.current.getContext("2d");
+    ctx.drawImage(videoRef.current, 0, 0, 400, 300);
+    canvasRef.current.toBlob(blob => {
+      onCapture(blob);
+      onClose();
+    }, "image/jpeg");
+  };
+
+  return (
+    <CameraModalBackdrop>
+      <CameraModalBox>
+        <video ref={videoRef} width={400} height={300} autoPlay style={{ borderRadius: 8, background: "#000" }} />
+        <canvas ref={canvasRef} width={400} height={300} style={{ display: "none" }} />
+        <div style={{ marginTop: 16 }}>
+          <Button onClick={handleCapture}>Capture</Button>
+          <Button onClick={onClose} style={{ marginLeft: 12, background: "#444", color: "#fff" }}>Close</Button>
+        </div>
+      </CameraModalBox>
+    </CameraModalBackdrop>
+  );
+};
 
 const DiseaseDetect = () => {
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
@@ -162,20 +242,24 @@ const DiseaseDetect = () => {
     }
   };
 
+  const handleCameraCapture = (blob) => {
+    setImage(URL.createObjectURL(blob));
+    setImageFile(new File([blob], "captured.jpg", { type: "image/jpeg" }));
+    setResult("");
+  };
+
   const handleDetect = async () => {
     if (!imageFile) {
       setResult("❌ Please upload an image first.");
       return;
     }
-
     setLoading(true);
     setResult("");
-
     try {
       const formData = new FormData();
       formData.append("image", imageFile);
 
-      const res = await fetch(`${API_BASE_URL}/api/disease/upload`, {
+      const res = await fetch("http://localhost:5000/api/disease/upload", {
         method: "POST",
         body: formData,
       });
@@ -191,7 +275,7 @@ const DiseaseDetect = () => {
         setResult("❌ No prediction returned from server.");
       }
     } catch (err) {
-      setResult("❌ Error during prediction.");
+      setResult("❌ Error occurred during prediction.");
     } finally {
       setLoading(false);
     }
@@ -200,22 +284,44 @@ const DiseaseDetect = () => {
   return (
     <Container>
       <Title>🦠 Disease Detection</Title>
-      <Subtitle>Upload an image of your plant to detect disease using AI.</Subtitle>
+      <Subtitle>
+        Upload or capture an image of your plant to detect possible diseases using AI.
+      </Subtitle>
 
       <UploadBox>
         <input type="file" accept="image/*" onChange={handleUpload} />
-        <p>📁 Click to upload</p>
+        <p>📁 Click to upload from gallery or storage</p>
+        {image && (
+          <PreviewWrapper>
+            <Preview src={image} alt="preview" />
+            {loading && (
+              <ScanOverlay>
+                <ScanLine />
+              </ScanOverlay>
+            )}
+          </PreviewWrapper>
+        )}
       </UploadBox>
 
-      {image && (
-        <PreviewWrapper>
-          <Preview src={image} alt="preview" />
-          {loading && (
-            <ScanOverlay>
-              <ScanLine />
-            </ScanOverlay>
-          )}
-        </PreviewWrapper>
+      <CameraButton onClick={() => setShowCamera(true)}>
+        📷 Use Laptop Camera
+      </CameraButton>
+
+      <UploadBox>
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleUpload}
+        />
+        <p>📷 Click to capture using your camera (mobile only)</p>
+      </UploadBox>
+
+      {showCamera && (
+        <CameraModal
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
       )}
 
       {image && (
