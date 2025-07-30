@@ -85,6 +85,9 @@ const ClimateAdvice = () => {
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+    
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
 
   const fetchWeather = async (e) => {
     e.preventDefault();
@@ -103,11 +106,9 @@ const ClimateAdvice = () => {
     setLoading(true);
     setWeather(null);
 
-    try {
+ try {
       const res = await axios.get(
-        `http://localhost:5000/api/climate?city=${encodeURIComponent(
-          city
-        )}&plant=${encodeURIComponent(plantType)}`
+        `${API_BASE_URL}/api/climate?city=${encodeURIComponent(city)}&plant=${encodeURIComponent(plantType)}`
       );
       setWeather(res.data);
     } catch (err) {
@@ -118,7 +119,6 @@ const ClimateAdvice = () => {
       setLoading(false);
     }
   };
-
   const getAdvice = () => {
     if (!weather) return "";
     const { temperature, humidity, weather: condition } = weather;
