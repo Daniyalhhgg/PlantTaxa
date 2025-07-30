@@ -2,51 +2,59 @@ import { useEffect, useState, useRef } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
+import { FaReply, FaEdit, FaTrash } from "react-icons/fa";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 const lightTheme = {
-  bg: "#e5ddd5",
-  text: "#111",
-  bubbleSelf: "#dcf8c6",
-  bubbleOthers: "#fff",
+  bg: "#f5f5f5",
+  text: "#1a1a1a",
+  bubbleSelf: "#a7e4a0",
+  bubbleOthers: "#ffffff",
   border: "#25d366",
-  replyBg: "#f0f0f0",
-  replyBorder: "#ccc",
+  replyBg: "#e0e0e0",
+  replyBorder: "#b0b0b0",
 };
 
 const darkTheme = {
-  bg: "#121212",
-  text: "#eee",
-  bubbleSelf: "#056162",
-  bubbleOthers: "#262d31",
-  border: "#128c7e",
-  replyBg: "#1a1a1a",
-  replyBorder: "#333",
+  bg: "#1a1a1a",
+  text: "#f0f0f0",
+  bubbleSelf: "#00a884",
+  bubbleOthers: "#2d3a45",
+  border: "#25d366",
+  replyBg: "#252525",
+  replyBorder: "#4a4a4a",
 };
 
 const Container = styled.div`
-  max-width: 1050px;
-  margin: 0 auto;
-  height: 80vh;
-  display: flex;
-  flex-direction: column;
+  max-width: 1100px;
+  margin: 20px auto;
+  height: 85vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background: ${({ theme }) => theme.bg};
   color: ${({ theme }) => theme.text};
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  @media (max-width: 768px) {
+    padding: 0 8px;
+    height: 90vh;
+  }
 `;
 
 const Header = styled.header`
-  height: 50px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #ccc;
-  background: ${({ theme }) => (theme === darkTheme ? "#202c33" : "#f8f8f8")};
-  padding: 0 16px;
+  background: ${({ theme }) => (theme === darkTheme ? "#1f2a31" : "#ffffff")};
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 0 20px;
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   color: ${({ theme }) => theme.text};
   user-select: none;
 `;
@@ -55,81 +63,99 @@ const ToggleModeBtn = styled.button`
   background: none;
   border: none;
   color: ${({ theme }) => theme.border};
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   font-size: 1.1rem;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   &:hover {
     background: ${({ theme }) => theme.border};
     color: white;
+    transform: scale(1.05);
   }
 `;
 
 const MessageList = styled.div`
   flex: 1;
-  padding: 20px 16px;
+  padding: 24px 20px;
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
-  gap: 12px;
+  gap: 16px;
   background: ${({ theme }) => (theme === darkTheme ? "#111b21" : "#ece5dd")};
   border-radius: 0 0 10px 10px;
 `;
 
 const Bubble = styled(motion.div)`
-  max-width: 65%;
+  max-width: 70%;
   background-color: ${({ isSelf, theme }) =>
     isSelf ? theme.bubbleSelf : theme.bubbleOthers};
-  padding: 10px 14px;
-  border-radius: 7.5px;
-  box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   align-self: ${({ isSelf }) => (isSelf ? "flex-end" : "flex-start")};
   position: relative;
-  font-size: 0.95rem;
+  font-size: 1rem;
   word-break: break-word;
-
   &:after {
     content: "";
     position: absolute;
     bottom: 0;
-    ${({ isSelf }) => (isSelf ? "right: -8px;" : "left: -8px;")}
+    ${({ isSelf }) => (isSelf ? "right: -10px;" : "left: -10px;")}
     width: 0;
     height: 0;
-    border: 8px solid transparent;
+    border: 10px solid transparent;
     border-top-color: ${({ isSelf, theme }) =>
       isSelf ? theme.bubbleSelf : theme.bubbleOthers};
     border-bottom: 0;
-    margin-bottom: -8px;
+    margin-bottom: -10px;
   }
+  @media (max-width: 768px) {
+    max-width: 85%;
+    font-size: 0.9rem;
+  }
+`;
+
+const Avatar = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.border};
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  margin-${({ isSelf }) => (isSelf ? "left" : "right")}: 8px;
 `;
 
 const MessageHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 4px;
-  font-size: 0.8rem;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
   color: ${({ theme }) => `${theme.text}cc`};
-  font-weight: 600;
+  font-weight: 500;
 `;
 
 const ReplyPreview = styled.div`
   background: ${({ theme }) => theme.replyBg};
   border-left: 4px solid ${({ theme }) => theme.replyBorder};
-  padding: 6px 12px;
-  margin-bottom: 6px;
-  border-radius: 4px;
-  font-style: italic;
-  color: ${({ theme }) => `${theme.text}aa`};
-  user-select: none;
+  padding: 8px 14px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  color: ${({ theme }) => theme.text};
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const ActionGroup = styled.div`
-  margin-top: 6px;
+  margin-top: 8px;
   display: flex;
-  gap: 14px;
+  gap: 16px;
 `;
 
 const ActionBtn = styled.button`
@@ -139,18 +165,34 @@ const ActionBtn = styled.button`
   cursor: pointer;
   font-weight: 600;
   font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
   transition: color 0.25s ease;
-
   &:hover {
     color: #128c7e;
     text-decoration: underline;
+  }
+  &:hover:after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: ${({ theme }) => theme.text};
+    color: ${({ theme }) => theme.bg};
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
   }
 `;
 
 const InputWrapper = styled.form`
   border-top: 1px solid #ccc;
-  background: ${({ theme }) => (theme === darkTheme ? "#202c33" : "#f8f8f8")};
-  padding: 12px 20px;
+  background: ${({ theme }) => (theme === darkTheme ? "#1f2a31" : "#ffffff")};
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -160,38 +202,40 @@ const InputArea = styled.textarea`
   flex: 1;
   border: none;
   border-radius: 20px;
-  padding: 10px 16px;
+  padding: 12px 16px;
+  min-height: 40px;
+  max-height: 120px;
   resize: none;
+  line-height: 1.5;
   font-size: 1rem;
   font-family: inherit;
   background: ${({ theme }) => (theme === darkTheme ? "#2a3942" : "#fff")};
   color: ${({ theme }) => theme.text};
   box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.1);
-
   &:focus {
     outline: none;
-    box-shadow: 0 0 3px ${({ theme }) => theme.border};
+    box-shadow: 0 0 4px ${({ theme }) => theme.border};
   }
 `;
 
 const SendBtn = styled.button`
-  background: ${({ theme }) => theme.border};
+  background: linear-gradient(135deg, ${({ theme }) => theme.border}, #1aa179);
   border: none;
   color: white;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 20px;
-  transition: background-color 0.3s ease;
-
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background-color 0.3s ease;
   &:hover {
-    background-color: #128c7e;
+    transform: scale(1.1);
+    background: #1aa179;
   }
-
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -200,7 +244,7 @@ const SendBtn = styled.button`
 
 const ClearBtn = styled.button`
   align-self: flex-start;
-  margin: 10px 0;
+  margin: 12px 0;
   background: none;
   border: none;
   color: ${({ theme }) => theme.border};
@@ -208,10 +252,16 @@ const ClearBtn = styled.button`
   font-weight: 600;
   font-size: 0.9rem;
   user-select: none;
-
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const Loading = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: ${({ theme }) => `${theme.text}99`};
+  font-size: 1rem;
 `;
 
 const Forum = () => {
@@ -221,6 +271,7 @@ const Forum = () => {
   const [userId, setUserId] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [replyTo, setReplyTo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const messageListRef = useRef();
 
   useEffect(() => {
@@ -240,25 +291,33 @@ const Forum = () => {
     if (messageListRef.current) messageListRef.current.scrollTop = 0;
   }, [messages]);
 
+  useEffect(() => {
+    const textarea = document.querySelector("textarea");
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [input]);
+
   const fetchMessages = async () => {
+    setIsLoading(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/forum`);
       const data = await res.json();
       setMessages(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch messages:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
-
-    const url = editId
-      ? `${API_BASE_URL}/api/forum/${editId}`
-      : `${API_BASE_URL}/api/forum`;
+    setIsLoading(true);
+    const url = editId ? `${API_BASE_URL}/api/forum/${editId}` : `${API_BASE_URL}/api/forum`;
     const method = editId ? "PUT" : "POST";
-
     try {
       await fetch(url, {
         method,
@@ -274,6 +333,8 @@ const Forum = () => {
       fetchMessages();
     } catch (err) {
       console.error("Failed to send message:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -318,6 +379,7 @@ const Forum = () => {
         <ClearBtn onClick={handleClearMyMessages}>Clear My Messages</ClearBtn>
 
         <MessageList ref={messageListRef}>
+          {isLoading && <Loading>Loading...</Loading>}
           {[...messages].map((msg) => {
             const isSelf = msg.user?._id === userId;
             return (
@@ -328,30 +390,42 @@ const Forum = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                {msg.replyTo && (
-                  <ReplyPreview>
-                    Replying to: {msg.replyTo.content?.slice(0, 40)}...
-                  </ReplyPreview>
-                )}
-                <MessageHeader>
-                  <span>{msg.user?.name || "Anonymous"}</span>
-                  <span>
-                    {new Date(msg.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                </MessageHeader>
-                <div>{msg.content}</div>
-                <ActionGroup>
-                  <ActionBtn onClick={() => handleReply(msg)}>Reply</ActionBtn>
-                  {isSelf && (
-                    <>
-                      <ActionBtn onClick={() => handleEdit(msg)}>Edit</ActionBtn>
-                      <ActionBtn onClick={() => handleDelete(msg._id)}>Delete</ActionBtn>
-                    </>
-                  )}
-                </ActionGroup>
+                <div style={{ display: "flex", alignItems: "flex-start" }}>
+                  {!isSelf && <Avatar isSelf={isSelf}>{msg.user?.name?.[0] || "A"}</Avatar>}
+                  <div style={{ flex: 1 }}>
+                    {msg.replyTo && (
+                      <ReplyPreview>
+                        <span>Replying to: {msg.replyTo.content?.slice(0, 80)}...</span>
+                      </ReplyPreview>
+                    )}
+                    <MessageHeader>
+                      <span>{msg.user?.name || "Anonymous"}</span>
+                      <span>
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </MessageHeader>
+                    <div>{msg.content}</div>
+                    <ActionGroup>
+                      <ActionBtn onClick={() => handleReply(msg)} data-tooltip="Reply">
+                        <FaReply /> Reply
+                      </ActionBtn>
+                      {isSelf && (
+                        <>
+                          <ActionBtn onClick={() => handleEdit(msg)} data-tooltip="Edit">
+                            <FaEdit /> Edit
+                          </ActionBtn>
+                          <ActionBtn onClick={() => handleDelete(msg._id)} data-tooltip="Delete">
+                            <FaTrash /> Delete
+                          </ActionBtn>
+                        </>
+                      )}
+                    </ActionGroup>
+                  </div>
+                  {isSelf && <Avatar isSelf={isSelf}>{msg.user?.name?.[0] || "A"}</Avatar>}
+                </div>
               </Bubble>
             );
           })}
@@ -359,8 +433,8 @@ const Forum = () => {
 
         {replyTo && (
           <ReplyPreview>
-            Replying to: {replyTo.content?.slice(0, 60)}...
-            <ActionBtn onClick={cancelReply} style={{ marginLeft: 10 }}>
+            <span>Replying to: {replyTo.content?.slice(0, 80)}...</span>
+            <ActionBtn onClick={cancelReply} data-tooltip="Cancel Reply">
               Cancel
             </ActionBtn>
           </ReplyPreview>
@@ -379,7 +453,7 @@ const Forum = () => {
               }
             }}
           />
-          <SendBtn type="submit" disabled={!input.trim()}>➤</SendBtn>
+          <SendBtn type="submit" disabled={!input.trim()}>✈️</SendBtn>
         </InputWrapper>
       </Container>
     </ThemeProvider>
