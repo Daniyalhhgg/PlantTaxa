@@ -28,8 +28,8 @@ const darkTheme = {
 
 const Container = styled.div`
   max-width: 1100px;
-  margin: 20px auto;
-  height: 85vh;
+  margin: 16px auto;
+  height: calc(100vh - 32px);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background: ${({ theme }) => theme.bg};
@@ -39,24 +39,35 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   @media (max-width: 768px) {
+    margin: 8px;
     padding: 0 8px;
-    height: 90vh;
+    height: calc(100vh - 16px);
+  }
+  @media (max-width: 480px) {
+    margin: 4px;
+    padding: 0 4px;
+    height: calc(100vh - 8px);
   }
 `;
 
 const Header = styled.header`
-  height: 60px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: ${({ theme }) => (theme === darkTheme ? "#1f2a31" : "#ffffff")};
   border-radius: 12px 12px 0 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 0 20px;
+  padding: 0 16px;
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   color: ${({ theme }) => theme.text};
   user-select: none;
+  @media (max-width: 480px) {
+    height: 48px;
+    font-size: 1.1rem;
+    padding: 0 12px;
+  }
 `;
 
 const ToggleModeBtn = styled.button`
@@ -65,33 +76,51 @@ const ToggleModeBtn = styled.button`
   color: ${({ theme }) => theme.border};
   font-weight: 600;
   cursor: pointer;
-  font-size: 1.1rem;
-  padding: 8px 14px;
+  font-size: 1rem;
+  padding: 8px 12px;
   border-radius: 8px;
   transition: background-color 0.2s ease, transform 0.2s ease;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   &:hover {
     background: ${({ theme }) => theme.border};
     color: white;
     transform: scale(1.05);
   }
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
 `;
 
 const MessageList = styled.div`
   flex: 1;
-  padding: 24px 20px;
+  padding: 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
-  gap: 16px;
+  gap: 12px;
   background: ${({ theme }) => (theme === darkTheme ? "#111b21" : "#ece5dd")};
   border-radius: 0 0 10px 10px;
+  overscroll-behavior: contain;
+  @media (max-width: 768px) {
+    padding: 12px;
+    gap: 10px;
+  }
+  @media (max-width: 480px) {
+    padding: 8px;
+    gap: 8px;
+  }
 `;
 
 const Bubble = styled(motion.div)`
   max-width: 70%;
   background-color: ${({ isSelf, theme }) =>
     isSelf ? theme.bubbleSelf : theme.bubbleOthers};
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   align-self: ${({ isSelf }) => (isSelf ? "flex-end" : "flex-start")};
@@ -102,18 +131,24 @@ const Bubble = styled(motion.div)`
     content: "";
     position: absolute;
     bottom: 0;
-    ${({ isSelf }) => (isSelf ? "right: -10px;" : "left: -10px;")}
+    ${({ isSelf }) => (isSelf ? "right: -8px;" : "left: -8px;")}
     width: 0;
     height: 0;
-    border: 10px solid transparent;
+    border: 8px solid transparent;
     border-top-color: ${({ isSelf, theme }) =>
       isSelf ? theme.bubbleSelf : theme.bubbleOthers};
     border-bottom: 0;
-    margin-bottom: -10px;
+    margin-bottom: -8px;
   }
   @media (max-width: 768px) {
-    max-width: 85%;
+    max-width: 80%;
+    font-size: 0.95rem;
+    padding: 8px 12px;
+  }
+  @media (max-width: 480px) {
+    max-width: 90%;
     font-size: 0.9rem;
+    padding: 6px 10px;
   }
 `;
 
@@ -128,6 +163,13 @@ const Avatar = styled.div`
   justify-content: center;
   font-size: 0.9rem;
   margin-${({ isSelf }) => (isSelf ? "left" : "right")}: 8px;
+  flex-shrink: 0;
+  @media (max-width: 480px) {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    margin-${({ isSelf }) => (isSelf ? "left" : "right")}: 6px;
+  }
 `;
 
 const MessageHeader = styled.div`
@@ -137,12 +179,15 @@ const MessageHeader = styled.div`
   font-size: 0.9rem;
   color: ${({ theme }) => `${theme.text}cc`};
   font-weight: 500;
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+  }
 `;
 
 const ReplyPreview = styled.div`
   background: ${({ theme }) => theme.replyBg};
   border-left: 4px solid ${({ theme }) => theme.replyBorder};
-  padding: 8px 14px;
+  padding: 8px 12px;
   margin-bottom: 8px;
   border-radius: 6px;
   color: ${({ theme }) => theme.text};
@@ -150,12 +195,20 @@ const ReplyPreview = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
 `;
 
 const ActionGroup = styled.div`
   margin-top: 8px;
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `;
 
 const ActionBtn = styled.button`
@@ -170,6 +223,7 @@ const ActionBtn = styled.button`
   gap: 4px;
   position: relative;
   transition: color 0.25s ease;
+  min-height: 44px;
   &:hover {
     color: #128c7e;
     text-decoration: underline;
@@ -186,25 +240,35 @@ const ActionBtn = styled.button`
     border-radius: 4px;
     font-size: 0.8rem;
     white-space: nowrap;
+    z-index: 10;
+  }
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    gap: 3px;
   }
 `;
 
 const InputWrapper = styled.form`
   border-top: 1px solid #ccc;
   background: ${({ theme }) => (theme === darkTheme ? "#1f2a31" : "#ffffff")};
-  padding: 16px 20px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: nowrap;
+  @media (max-width: 480px) {
+    padding: 8px 12px;
+    gap: 8px;
+  }
 `;
 
 const InputArea = styled.textarea`
   flex: 1;
   border: none;
   border-radius: 20px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   min-height: 40px;
-  max-height: 120px;
+  max-height: 100px;
   resize: none;
   line-height: 1.5;
   font-size: 1rem;
@@ -216,14 +280,19 @@ const InputArea = styled.textarea`
     outline: none;
     box-shadow: 0 0 4px ${({ theme }) => theme.border};
   }
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    min-height: 36px;
+  }
 `;
 
 const SendBtn = styled.button`
   background: linear-gradient(135deg, ${({ theme }) => theme.border}, #1aa179);
   border: none;
   color: white;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
@@ -232,6 +301,7 @@ const SendBtn = styled.button`
   font-size: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, background-color 0.3s ease;
+  flex-shrink: 0;
   &:hover {
     transform: scale(1.1);
     background: #1aa179;
@@ -239,6 +309,11 @@ const SendBtn = styled.button`
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
   }
 `;
 
@@ -252,16 +327,25 @@ const ClearBtn = styled.button`
   font-weight: 600;
   font-size: 0.9rem;
   user-select: none;
+  min-height: 44px;
   &:hover {
     text-decoration: underline;
+  }
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    margin: 8px 0;
   }
 `;
 
 const Loading = styled.div`
   text-align: center;
-  padding: 20px;
+  padding: 16px;
   color: ${({ theme }) => `${theme.text}99`};
   font-size: 1rem;
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
 `;
 
 const Forum = () => {
@@ -386,9 +470,9 @@ const Forum = () => {
               <Bubble
                 key={msg._id}
                 isSelf={isSelf}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.2 }}
               >
                 <div style={{ display: "flex", alignItems: "flex-start" }}>
                   {!isSelf && <Avatar isSelf={isSelf}>{msg.user?.name?.[0] || "A"}</Avatar>}
