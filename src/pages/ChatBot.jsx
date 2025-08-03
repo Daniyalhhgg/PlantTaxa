@@ -194,7 +194,7 @@ const Chatbot = () => {
       const data = await res.json();
       const botMsg = {
         sender: "bot",
-        text: data.answer || "🤖 No response from DeepSeek model."
+        text: data.answer || "🤖 Daily sms request is full please wait after 24 hour Bot working fine ."
       };
 
       setMessages((prev) => [...prev, botMsg]);
