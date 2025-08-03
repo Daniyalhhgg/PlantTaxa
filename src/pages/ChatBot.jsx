@@ -28,19 +28,43 @@ const diseases = [
 
 const Container = styled.div`
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #e8f5e9, #f1f8e9);
   min-height: 100vh;
-  padding: 40px 20px;
+  background: url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6") center/cover no-repeat;
+  padding: 60px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  color: #ffffff;
+
+  &::before {
+    content: "";
+    background: rgba(0, 60, 30, 0.85);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.7s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 `;
 
 const Title = styled.h1`
   font-size: 2.5rem;
-  color: #2e7d32;
+  color: #c8e6c9;
   margin-bottom: 25px;
   font-weight: bold;
+  text-shadow: 1px 1px 3px #000;
 `;
 
 const DiseaseList = styled.div`
@@ -52,28 +76,28 @@ const DiseaseList = styled.div`
 `;
 
 const DiseaseTag = styled.span`
-  background-color: #66bb6a;
+  background-color: #66bb74ff;
   color: white;
   padding: 8px 16px;
   border-radius: 25px;
   cursor: pointer;
   font-size: 0.95rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: #388e3c;
+    background-color: #558b2f;
     transform: scale(1.05);
   }
 `;
 
 const ChatBox = styled.div`
-  background-color: white;
+  background-color: rgba(255,255,255,0.95);
   border-radius: 16px;
   width: 100%;
   max-width: 800px;
   padding: 25px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -84,12 +108,22 @@ const ChatBox = styled.div`
 
 const Message = styled.div`
   align-self: ${props => props.user ? 'flex-end' : 'flex-start'};
-  background-color: ${props => props.user ? '#c8e6c9' : '#b2ebf2'};
-  padding: 12px 18px;
+  background: ${props => props.user
+    ? 'rgba(129, 199, 132, 0.3)'
+    : 'linear-gradient(135deg, rgba(0,150,136,0.2), rgba(0,255,200,0.15))'};
+  color: #000;
+  padding: 14px 20px;
   border-radius: 18px;
-  max-width: 70%;
+  max-width: 75%;
   font-size: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  border: ${props => props.user ? "1px solid #81c784" : "1px solid #4db6ac"};
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.01);
+  }
 `;
 
 const InputArea = styled.div`
@@ -111,7 +145,7 @@ const Input = styled.input`
   transition: border-color 0.3s;
 
   &:focus {
-    border-color: #43a047;
+    border-color: #7ca043ff;
   }
 `;
 
