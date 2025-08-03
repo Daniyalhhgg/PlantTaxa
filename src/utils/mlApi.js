@@ -16,3 +16,4 @@ export const predictDisease = async (imageFile) => {
     throw new Error(data.error || "Prediction failed");
   }
 };
+// for huuging model
