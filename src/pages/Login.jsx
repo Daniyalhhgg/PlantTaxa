@@ -1,213 +1,124 @@
+// src/pages/Login.jsx
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { setToken } from "../utils/auth";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
-const diseases = [
-  'Apple___Apple_scab',
-  'Apple___Black_rot',
-  'Apple___Cedar_apple_rust',
-  'Cherry_(including_sour)___Powdery_mildew',
-  'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
-  'Corn_(maize)___Common_rust_',
-  'Corn_(maize)___Northern_Leaf_Blight',
-  'Grape___Black_rot',
-  'Grape___Esca_(Black_Measles)',
-  'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
-  'Grape___healthy',
-  'Orange___Haunglongbing_(Citrus_greening)',
-  'Peach___Bacterial_spot',
-  'Peach___healthy',
-  'Pepper,_bell___Bacterial_spot',
-  'Squash___Powdery_mildew',
-  'Strawberry___Leaf_scorch',
-  'Tomato___Bacterial_spot',
-  'Tomato___Septoria_leaf_spot',
-  'Tomato___Spider_mites Two-spotted_spider_mite'
-];
-
-const Container = styled.div`
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #e8f5e9, #f1f8e9);
-  min-height: 100vh;
-  padding: 40px 20px;
+const Wrapper = styled.div`
+  background: url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6") center/cover no-repeat;
+  height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  color: #2e7d32;
-  margin-bottom: 25px;
-  font-weight: bold;
-`;
-
-const DiseaseList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
   justify-content: center;
-  margin-bottom: 30px;
-`;
+  position: relative;
 
-const DiseaseTag = styled.span`
-  background-color: #66bb6a;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #388e3c;
-    transform: scale(1.05);
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 30, 0, 0.6);
+    z-index: 1;
   }
 `;
 
-const ChatBox = styled.div`
-  background-color: white;
+const Card = styled.div`
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
   border-radius: 16px;
+  padding: 40px;
+  max-width: 420px;
   width: 100%;
-  max-width: 800px;
-  padding: 25px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  min-height: 400px;
-  max-height: 600px;
-  overflow-y: auto;
-`;
-
-const Message = styled.div`
-  align-self: ${props => props.user ? 'flex-end' : 'flex-start'};
-  background-color: ${props => props.user ? '#c8e6c9' : '#b2ebf2'};
-  padding: 12px 18px;
-  border-radius: 18px;
-  max-width: 70%;
-  font-size: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-`;
-
-const InputArea = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 25px;
-  width: 100%;
-  max-width: 800px;
+  text-align: center;
+  color: white;
 `;
 
 const Input = styled.input`
-  flex: 1;
-  padding: 14px 20px;
-  border-radius: 30px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  outline: none;
-  margin-right: 12px;
-  transition: border-color 0.3s;
+  width: 100%;
+  padding: 12px 16px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+
+  &::placeholder {
+    color: #ccc;
+  }
 
   &:focus {
-    border-color: #43a047;
+    outline: 2px solid #81c784;
   }
 `;
 
 const Button = styled.button`
-  padding: 14px 24px;
-  background-color: #43a047;
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background-color: #66bb6a;
   color: white;
   font-weight: bold;
   border: none;
-  border-radius: 30px;
-  font-size: 1rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
 
   &:hover {
-    background-color: #2e7d32;
-  }
-
-  &:disabled {
-    background-color: #a5d6a7;
-    cursor: not-allowed;
+    background-color: #43a047;
   }
 `;
 
-const Chatbot = () => {
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: "🌿 Hello! Ask me anything about plants, care, or diseases." }
-  ]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const sendMessage = async (msgText = input) => {
-    if (!msgText.trim()) return;
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
 
-    const userMsg = { sender: "user", text: msgText };
-    setMessages((prev) => [...prev, userMsg]);
-    setLoading(true);
+  const handleLogin = async () => {
+    if (!email || !password) {
+      return toast.error("All fields are required!");
+    }
+
+    if (!validateEmail(email)) {
+      return toast.warning("Invalid email format.");
+    }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/chatbot`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msgText }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
-      const botMsg = {
-        sender: "bot",
-        text: data.answer || "🤖 No response from DeepSeek model."
-      };
+      if (!res.ok) throw new Error(data.msg || "Login failed");
 
-      setMessages((prev) => [...prev, botMsg]);
+      setToken(data.token);
+      toast.success("Login successful!");
+      setTimeout(() => navigate("/dashboard"), 1500);
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "⚠️ Error: Could not connect to server." }
-      ]);
-    } finally {
-      setInput("");
-      setLoading(false);
+      toast.error(err.message);
     }
   };
 
   return (
-    <Container>
-      <Title>🌱 PlantTaxa Chatbot</Title>
-
-      <DiseaseList>
-        {diseases.map((disease, idx) => (
-          <DiseaseTag key={idx} onClick={() => sendMessage(`What is the solution for ${disease}?`)}>
-            {disease.replaceAll("_", " ")}
-          </DiseaseTag>
-        ))}
-      </DiseaseList>
-
-      <ChatBox>
-        {messages.map((msg, idx) => (
-          <Message key={idx} user={msg.sender === "user"}>
-            <strong>{msg.sender === "user" ? "You" : "Bot"}:</strong> {msg.text}
-          </Message>
-        ))}
-      </ChatBox>
-
-      <InputArea>
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Type a plant-related question..."
-        />
-        <Button onClick={() => sendMessage()} disabled={loading}>
-          {loading ? "Sending..." : "Send"}
-        </Button>
-      </InputArea>
-    </Container>
+    <Wrapper>
+      <Card>
+        <h2>Login to PlantTaxa 🌿</h2>
+        <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <Button onClick={handleLogin}>Login</Button>
+        <p style={{ marginTop: "12px" }}>
+          Don’t have an account? <Link to="/register">Register</Link>
+        </p>
+      </Card>
+      <ToastContainer position="top-center" autoClose={3000} />
+    </Wrapper>
   );
 };
 
-export default Chatbot;
+export default Login;

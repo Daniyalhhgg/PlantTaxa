@@ -1,5 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
 const diseases = [
   'Apple___Apple_scab',
   'Apple___Black_rot',
@@ -20,11 +23,8 @@ const diseases = [
   'Strawberry___Leaf_scorch',
   'Tomato___Bacterial_spot',
   'Tomato___Septoria_leaf_spot',
-  'Tomato___Spider_mites Two-spotted_spider_mite',
-
-  
+  'Tomato___Spider_mites Two-spotted_spider_mite'
 ];
-
 
 const Container = styled.div`
   font-family: 'Segoe UI', sans-serif;
@@ -151,7 +151,7 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/chatbot", {
+      const res = await fetch(`${API_BASE_URL}/api/chatbot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msgText }),
