@@ -66,7 +66,7 @@ const DiseaseList = styled.div`
 `;
 
 const DiseaseTag = styled.span`
-  background-color: #66bb74ff;
+  background-color: #66bb6a;
   color: white;
   padding: 8px 16px;
   border-radius: 25px;
@@ -76,7 +76,7 @@ const DiseaseTag = styled.span`
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: #558b2f;
+    background-color: #388e3c;
     transform: scale(1.05);
   }
 `;
@@ -135,7 +135,7 @@ const Input = styled.input`
   transition: border-color 0.3s;
 
   &:focus {
-    border-color: #7ca043ff;
+    border-color: #7ca043;
   }
 `;
 
