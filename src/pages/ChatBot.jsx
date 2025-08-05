@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-// Styled components (same as your original code)
 const Container = styled.div`
   font-family: 'Segoe UI', sans-serif;
   min-height: 100vh;
@@ -117,31 +116,30 @@ const Button = styled.button`
   }
 `;
 
-// **Important:** Fetch backend API URL from environment variable or fallback to localhost
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
 const ChatBot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Show initial welcome message when chat loads
   useEffect(() => {
-    setMessages([{
+    const welcomeMessage = {
       sender: 'bot',
-      text: "🌿 Hello! How can I assist you today? Do you need help identifying a plant disease or caring for a specific plant?"
-    }]);
+      text: "🌿 Hello! How can I assist you today? Do you need help identifying a plant disease or caring for a specific plant?",
+    };
+    setMessages([welcomeMessage]);
   }, []);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage = { sender: 'user', text: input };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/chatbot`, {
+      const res = await fetch('http://localhost:5000/api/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input }),
@@ -150,13 +148,15 @@ const ChatBot = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setMessages(prev => [...prev, { sender: 'bot', text: data.response }]);
+        const botMessage = { sender: 'bot', text: data.response };
+        setMessages((prev) => [...prev, botMessage]);
       } else {
-        setMessages(prev => [...prev, { sender: 'bot', text: data.error || '🤖 Bot is overloaded. Please try again later.' }]);
+        const errorMsg = data.error || '🤖 Bot is overloaded. Please try again later.';
+        setMessages((prev) => [...prev, { sender: 'bot', text: errorMsg }]);
       }
     } catch (err) {
       console.error(err);
-      setMessages(prev => [...prev, { sender: 'bot', text: '❌ Network error.' }]);
+      setMessages((prev) => [...prev, { sender: 'bot', text: '❌ Network error.' }]);
     }
 
     setLoading(false);
@@ -167,8 +167,8 @@ const ChatBot = () => {
       <Title>🌿 PlantBot Assistant</Title>
 
       <ChatBox>
-        {messages.map((msg, i) => (
-          <Message key={i} sender={msg.sender}>
+        {messages.map((msg, index) => (
+          <Message key={index} sender={msg.sender}>
             <strong>{msg.sender === 'bot' ? '🤖 Bot' : '🧑 You'}:</strong> {msg.text}
           </Message>
         ))}
@@ -176,14 +176,12 @@ const ChatBot = () => {
 
       <InputArea>
         <Input
-          type="text"
           value={input}
           placeholder="Type a plant-related question..."
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && sendMessage()}
-          disabled={loading}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
         />
-        <Button onClick={sendMessage} disabled={loading || !input.trim()}>
+        <Button onClick={sendMessage} disabled={loading}>
           {loading ? 'Sending...' : 'Send'}
         </Button>
       </InputArea>
