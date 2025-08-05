@@ -1,20 +1,5 @@
-import { useState } from "react";
-import styled from "styled-components";
-
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
-
-const diseases = [
-  'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust',
-  'Cherry_(including_sour)___Powdery_mildew',
-  'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
-  'Corn_(maize)___Common_rust_', 'Corn_(maize)___Northern_Leaf_Blight',
-  'Grape___Black_rot', 'Grape___Esca_(Black_Measles)',
-  'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', 'Grape___healthy',
-  'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot',
-  'Peach___healthy', 'Pepper,_bell___Bacterial_spot', 'Squash___Powdery_mildew',
-  'Strawberry___Leaf_scorch', 'Tomato___Bacterial_spot',
-  'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite'
-];
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 
 const Container = styled.div`
   font-family: 'Segoe UI', sans-serif;
@@ -49,36 +34,12 @@ const Container = styled.div`
   }
 `;
 
-const Title = styled.h1`
-  font-size: 2.5rem;
+const Title = styled.h2`
+  font-size: 2.2rem;
   color: #c8e6c9;
   margin-bottom: 25px;
   font-weight: bold;
   text-shadow: 1px 1px 3px #000;
-`;
-
-const DiseaseList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-  margin-bottom: 30px;
-`;
-
-const DiseaseTag = styled.span`
-  background-color: #66bb6a;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #388e3c;
-    transform: scale(1.05);
-  }
 `;
 
 const ChatBox = styled.div`
@@ -97,8 +58,8 @@ const ChatBox = styled.div`
 `;
 
 const Message = styled.div`
-  align-self: ${props => props.user ? 'flex-end' : 'flex-start'};
-  background: ${props => props.user
+  align-self: ${props => props.sender === 'user' ? 'flex-end' : 'flex-start'};
+  background: ${props => props.sender === 'user'
     ? 'rgba(129, 199, 132, 0.3)'
     : 'linear-gradient(135deg, rgba(0,150,136,0.2), rgba(0,255,200,0.15))'};
   color: #000;
@@ -107,13 +68,8 @@ const Message = styled.div`
   max-width: 75%;
   font-size: 1rem;
   box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-  border: ${props => props.user ? "1px solid #81c784" : "1px solid #4db6ac"};
+  border: ${props => props.sender === 'user' ? "1px solid #81c784" : "1px solid #4db6ac"};
   backdrop-filter: blur(4px);
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.01);
-  }
 `;
 
 const InputArea = styled.div`
@@ -135,7 +91,7 @@ const Input = styled.input`
   transition: border-color 0.3s;
 
   &:focus {
-    border-color: #7ca043;
+    border-color: #7ca043ff;
   }
 `;
 
@@ -160,62 +116,60 @@ const Button = styled.button`
   }
 `;
 
-const Chatbot = () => {
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: "🌿 Hello! Ask me anything about plants, care, or diseases." }
-  ]);
-  const [input, setInput] = useState("");
+const ChatBot = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const sendMessage = async (msgText = input) => {
-    if (!msgText.trim()) return;
+  // Show initial welcome message when chat loads
+  useEffect(() => {
+    const welcomeMessage = {
+      sender: 'bot',
+      text: "🌿 Hello! How can I assist you today? Do you need help identifying a plant disease or caring for a specific plant?",
+    };
+    setMessages([welcomeMessage]);
+  }, []);
 
-    const userMsg = { sender: "user", text: msgText };
-    setMessages((prev) => [...prev, userMsg]);
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+
+    const userMessage = { sender: 'user', text: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/chatbot`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msgText }),
+      const res = await fetch('http://localhost:5000/api/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input }),
       });
 
       const data = await res.json();
 
-      const botMsg = {
-        sender: "bot",
-        text: data.answer || "🤖 Bot is overloaded. Please try again later."
-      };
-
-      setMessages((prev) => [...prev, botMsg]);
+      if (res.ok) {
+        const botMessage = { sender: 'bot', text: data.response };
+        setMessages((prev) => [...prev, botMessage]);
+      } else {
+        const errorMsg = data.error || '🤖 Bot is overloaded. Please try again later.';
+        setMessages((prev) => [...prev, { sender: 'bot', text: errorMsg }]);
+      }
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "⚠️ Error: Could not connect to server." }
-      ]);
-    } finally {
-      setInput("");
-      setLoading(false);
+      console.error(err);
+      setMessages((prev) => [...prev, { sender: 'bot', text: '❌ Network error.' }]);
     }
+
+    setLoading(false);
   };
 
   return (
     <Container>
-      <Title>🌱 PlantTaxa Chatbot</Title>
-
-      <DiseaseList>
-        {diseases.map((disease, idx) => (
-          <DiseaseTag key={idx} onClick={() => sendMessage(`What is the treatment for ${disease.replace(/_/g, " ")}?`)}>
-            {disease.replaceAll("_", " ")}
-          </DiseaseTag>
-        ))}
-      </DiseaseList>
+      <Title>🌿 PlantBot Assistant</Title>
 
       <ChatBox>
-        {messages.map((msg, idx) => (
-          <Message key={idx} user={msg.sender === "user"}>
-            <strong>{msg.sender === "user" ? "You" : "Bot"}:</strong> {msg.text}
+        {messages.map((msg, index) => (
+          <Message key={index} sender={msg.sender}>
+            <strong>{msg.sender === 'bot' ? '🤖 Bot' : '🧑 You'}:</strong> {msg.text}
           </Message>
         ))}
       </ChatBox>
@@ -223,16 +177,16 @@ const Chatbot = () => {
       <InputArea>
         <Input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           placeholder="Type a plant-related question..."
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
         />
-        <Button onClick={() => sendMessage()} disabled={loading}>
-          {loading ? "Sending..." : "Send"}
+        <Button onClick={sendMessage} disabled={loading}>
+          {loading ? 'Sending...' : 'Send'}
         </Button>
       </InputArea>
     </Container>
   );
 };
 
-export default Chatbot;
+export default ChatBot;
