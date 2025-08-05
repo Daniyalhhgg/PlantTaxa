@@ -4,26 +4,16 @@ import styled from "styled-components";
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 const diseases = [
-  'Apple___Apple_scab',
-  'Apple___Black_rot',
-  'Apple___Cedar_apple_rust',
+  'Apple___Apple_scab', 'Apple___Black_rot', 'Apple___Cedar_apple_rust',
   'Cherry_(including_sour)___Powdery_mildew',
   'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
-  'Corn_(maize)___Common_rust_',
-  'Corn_(maize)___Northern_Leaf_Blight',
-  'Grape___Black_rot',
-  'Grape___Esca_(Black_Measles)',
-  'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
-  'Grape___healthy',
-  'Orange___Haunglongbing_(Citrus_greening)',
-  'Peach___Bacterial_spot',
-  'Peach___healthy',
-  'Pepper,_bell___Bacterial_spot',
-  'Squash___Powdery_mildew',
-  'Strawberry___Leaf_scorch',
-  'Tomato___Bacterial_spot',
-  'Tomato___Septoria_leaf_spot',
-  'Tomato___Spider_mites Two-spotted_spider_mite'
+  'Corn_(maize)___Common_rust_', 'Corn_(maize)___Northern_Leaf_Blight',
+  'Grape___Black_rot', 'Grape___Esca_(Black_Measles)',
+  'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)', 'Grape___healthy',
+  'Orange___Haunglongbing_(Citrus_greening)', 'Peach___Bacterial_spot',
+  'Peach___healthy', 'Pepper,_bell___Bacterial_spot', 'Squash___Powdery_mildew',
+  'Strawberry___Leaf_scorch', 'Tomato___Bacterial_spot',
+  'Tomato___Septoria_leaf_spot', 'Tomato___Spider_mites Two-spotted_spider_mite'
 ];
 
 const Container = styled.div`
@@ -192,9 +182,10 @@ const Chatbot = () => {
       });
 
       const data = await res.json();
+
       const botMsg = {
         sender: "bot",
-        text: data.answer || "🤖 Daily sms request is full please wait after 24 hour Bot working fine ."
+        text: data.answer || "🤖 Bot is overloaded. Please try again later."
       };
 
       setMessages((prev) => [...prev, botMsg]);
@@ -215,7 +206,7 @@ const Chatbot = () => {
 
       <DiseaseList>
         {diseases.map((disease, idx) => (
-          <DiseaseTag key={idx} onClick={() => sendMessage(`What is the solution for ${disease}?`)}>
+          <DiseaseTag key={idx} onClick={() => sendMessage(`What is the treatment for ${disease.replace(/_/g, " ")}?`)}>
             {disease.replaceAll("_", " ")}
           </DiseaseTag>
         ))}
