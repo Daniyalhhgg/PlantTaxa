@@ -1,5 +1,14 @@
 import styled, { keyframes } from "styled-components";
-import { FaLinkedin, FaTwitter, FaGithub } from "react-icons/fa";
+import {
+  FaLinkedin,
+  FaTwitter,
+  FaGithub,
+  FaRobot,
+  FaMobileAlt,
+  FaLeaf,
+  FaStore,
+  FaUsers,
+} from "react-icons/fa";
 
 const fadeIn = keyframes`
   from {opacity: 0; transform: translateY(20px);}
@@ -92,6 +101,25 @@ const Paragraph = styled.p`
   text-align: justify;
   margin-bottom: 60px;
   font-weight: 400;
+
+  ul {
+    margin-top: 20px;
+    padding-left: 20px;
+    list-style: none;
+
+    li {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+`;
+
+const FeatureIcon = styled.span`
+  font-size: 1.3rem;
+  color: #2e7d32;
 `;
 
 const TeamGrid = styled.div`
@@ -201,26 +229,58 @@ const AboutUs = () => {
       <Section id="our-story">
         <Title>Our Story</Title>
         <Paragraph>
-          “We’re going to make the experience of discovering, growing, and caring for plants as intelligent and enjoyable as the plants themselves.”
+          At <strong>PlantTaxa</strong>, our journey began with a simple question: <strong>What if technology could help us reconnect with nature?</strong>
           <br /><br />
-          PlantTaxa is a final-year research project driven by passion and purpose. Using advanced AI, we help users identify plants, detect diseases, and get climate-specific advice. Our mission is to make plant care easy, accurate, and community-powered.
+          What started as a university research project is now evolving into a smart ecosystem for everyone — from weekend gardeners to professional botanists. Whether you're identifying a plant, checking for diseases, or getting tips tailored to your climate, PlantTaxa is your green companion.
+          <br /><br />
+          With a deep respect for biodiversity and the power of AI, we're reimagining the future of plant care — making it intelligent, accessible, and inspiring.
+        </Paragraph>
+
+        <Title>Vision & Future</Title>
+        <Paragraph>
+          <ul>
+            <li><FeatureIcon><FaRobot /></FeatureIcon> AI-powered chatbot trained on thousands of plant species</li>
+            <li><FeatureIcon><FaMobileAlt /></FeatureIcon> Seamless Web + Native Mobile apps</li>
+            <li><FeatureIcon><FaStore /></FeatureIcon> E-commerce platform for curated plant tools & care kits</li>
+            <li><FeatureIcon><FaUsers /></FeatureIcon> “Mali-as-a-Service” — book plant care professionals</li>
+            <li><FeatureIcon><FaLeaf /></FeatureIcon> Climate-specific suggestions and guidance</li>
+          </ul>
         </Paragraph>
 
         <Title>Meet Our Team</Title>
         <TeamGrid>
           <TeamCard>
-            <img src="/img2.jpg" alt="Daniyal Z." />
-            <h4>Daniyal Z.</h4>
-            <p>Full Stack web Developer</p>
+            <img src="/dani.jpg" alt="Daniyal Z." />
+            <h4>Daniyal Sabir</h4>
+            <p>Full Stack Web Developer</p>
+            
             <SocialIcons>
-              <a href="https://linkedin.com/in/daniyal" target="_blank" rel="noreferrer"><FaLinkedin /></a>
-              <a href="https://twitter.com/daniyal" target="_blank" rel="noreferrer"><FaTwitter /></a>
-              <a href="https://github.com/daniyal" target="_blank" rel="noreferrer"><FaGithub /></a>
+              <a
+                href="https://www.linkedin.com/in/daniyal-sabir-76a01a324?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FaLinkedin />
+              </a>
+              <a
+                href="https://twitter.com/Danirajpoot8074"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FaTwitter />
+              </a>
+              <a
+                href="https://github.com/Daniyalhhgg"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FaGithub />
+              </a>
             </SocialIcons>
           </TeamCard>
 
           <TeamCard>
-            <img src="/img3.jpg" alt="Usama bin Khalid" />
+            <img src="/usama.jpg" alt="Usama bin Khalid" />
             <h4>Usama bin Khalid</h4>
             <p>React.js Developer & Tester</p>
             <SocialIcons>
@@ -247,7 +307,7 @@ const AboutUs = () => {
         <TestimonialText>
           “PlantTaxa has revolutionized how I care for my garden. The AI suggestions are accurate and timely!”
         </TestimonialText>
-        <TestimonialAuthor>— Sarah Green, Plant Enthusiast</TestimonialAuthor>
+        <TestimonialAuthor>plant-taxa.vercel.app</TestimonialAuthor>
       </TestimonialSection>
     </Wrapper>
   );
