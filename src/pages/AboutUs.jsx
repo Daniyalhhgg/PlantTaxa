@@ -291,7 +291,7 @@ const AboutUs = () => {
           </TeamCard>
 
           <TeamCard>
-            <img src="/img4.jpg" alt="Ali Umair" />
+            <img src="/umair.jpg" alt="Ali Umair" />
             <h4>Ali Umair</h4>
             <p>AI Engineer & Dataset Handler</p>
             <SocialIcons>
