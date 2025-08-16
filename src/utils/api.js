@@ -1,53 +1,47 @@
-const API_URL = "http://localhost:5000/api"; // Change to deployed URL later
+import axios from "axios";
 
-export const registerUser = async (userData) => {
-  try {
-    const res = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    });
+// Base API URL (supports environment variable or fallback to localhost)
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || "Registration failed");
-    return data;
-  } catch (err) {
-    return { error: err.message };
-  }
+// Create a reusable Axios instance
+export const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// ================== Auth ==================
+export const registerUser = (userData) => api.post("/auth/register", userData);
+export const loginUser = (credentials) => api.post("/auth/login", credentials);
+
+// ================== Disease Prediction ==================
+export const predictDisease = (imageFile) => {
+  const formData = new FormData();
+  formData.append("image", imageFile);
+  return api.post("/disease/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 };
 
-export const loginUser = async (credentials) => {
-  try {
-    const res = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
+// ================== Products / Shop ==================
+export const getProducts = () => api.get("/products");         // List all products
+export const getProductById = (id) => api.get(`/products/${id}`); // Get single product by ID
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || "Login failed");
-    return data;
-  } catch (err) {
-    return { error: err.message };
-  }
-};
+// ================== Orders / Checkout ==================
+export const placeOrder = (orderData, token) =>
+  api.post("/orders", orderData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-// ✅ NEW: Upload plant image and get disease prediction
-export const predictDisease = async (imageFile) => {
-  try {
-    const formData = new FormData();
-    formData.append("image", imageFile);
+export const getUserOrders = (token) =>
+  api.get("/orders", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-    const res = await fetch(`${API_URL}/disease/upload`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Prediction failed");
-
-    return data; // { result: "Tomato___Late_blight" }
-  } catch (err) {
-    return { error: err.message };
-  }
-};
+// ================== Optional: Admin ==================
+// Example: Add new product (admin only)
+export const addProduct = (productData, token) =>
+  api.post("/admin/products", productData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
