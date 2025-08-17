@@ -122,6 +122,12 @@ const Navbar = () => {
             <StyledLink to="/ChatBot" active={location.pathname === "/ChatBot" ? 1 : 0}>ChatBot</StyledLink>
             <StyledLink to="/forum" active={location.pathname === "/forum" ? 1 : 0}>Forum</StyledLink>
             <StyledLink to="/ClimateAdvice" active={location.pathname === "/ClimateAdvice" ? 1 : 0}>Climate</StyledLink>
+
+            {/* ✅ New Plant Shop Link */}
+            <StyledLink to="/plant-shop" active={location.pathname === "/plant-shop" ? 1 : 0}>
+              Plant Shop
+            </StyledLink>
+
             <StyledLink to="/about" active={location.pathname === "/about" ? 1 : 0}>About</StyledLink>
             <StyledLink to="/contact" active={location.pathname === "/contact" ? 1 : 0}>Contact</StyledLink>
             <Button onClick={handleLogout}>Logout</Button>
