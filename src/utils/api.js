@@ -1,4 +1,8 @@
-const API_URL = "http://localhost:5000/api"; // Change to deployed URL later
+const API_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://upbeat-rejoicing-production.up.railway.app/api"
+    : "http://localhost:5000/api";
+
 
 // =======================
 // Auth

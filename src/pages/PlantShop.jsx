@@ -9,51 +9,33 @@ const PlantShop = () => {
 
   useEffect(() => {
     const fetchPlants = async () => {
-      try {
-        setLoading(true);
-        const data = await API.getPlants();
-        if (!data || data.error) {
-          setError(data?.error || "Could not load plant list. Please try again later.");
-          setPlants([]);
-        } else {
-          setPlants(data);
-          setError("");
-        }
-      } catch (err) {
-        console.error("❌ Failed to fetch plants:", err);
-        setError("Could not load plant list. Please try again later.");
+      setLoading(true);
+      const data = await API.getPlants();
+      if (!data || data.error) {
+        setError(data?.error || "Could not load plant list. Please try again later.");
         setPlants([]);
-      } finally {
-        setLoading(false);
+      } else {
+        setPlants(data);
+        setError("");
       }
+      setLoading(false);
     };
     fetchPlants();
   }, []);
 
   const handleBuy = async (plantId) => {
-    try {
-      const result = await API.buyPlant(plantId);
-      if (result.error) {
-        alert("Error: " + result.error);
-      } else {
-        alert("Order placed successfully!");
-      }
-    } catch (err) {
-      alert("Failed to place order. Please try again.");
-      console.error("❌ Buy plant error:", err);
+    const result = await API.buyPlant(plantId);
+    if (result.error) {
+      alert("Error: " + result.error);
+    } else {
+      alert("Order placed successfully!");
     }
   };
 
-  // Filter plants by search term and sort so matches appear first
+  // Filter plants by search term, then push non-matches to bottom
   const filteredPlants = plants
-    .filter(p =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .concat(
-      plants.filter(
-        p => !p.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
+    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .concat(plants.filter(p => !p.name.toLowerCase().includes(searchTerm.toLowerCase())));
 
   if (loading) return <p style={{ padding: "20px" }}>Loading plants...</p>;
   if (error) return <p style={{ padding: "20px", color: "red" }}>Error: {error}</p>;
@@ -85,7 +67,7 @@ const PlantShop = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)", // fixed 4 per row
+            gridTemplateColumns: "repeat(4, 1fr)",
             gap: "20px",
           }}
         >
@@ -101,11 +83,11 @@ const PlantShop = () => {
                 transition: "transform 0.3s, box-shadow 0.3s",
                 cursor: "pointer",
               }}
-              onMouseEnter={e => {
+              onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-5px)";
                 e.currentTarget.style.boxShadow = "0 6px 14px rgba(0,0,0,0.15)";
               }}
-              onMouseLeave={e => {
+              onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0px)";
                 e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
               }}
