@@ -124,7 +124,7 @@ const Navbar = () => {
             <StyledLink to="/ClimateAdvice" active={location.pathname === "/ClimateAdvice" ? 1 : 0}>Climate</StyledLink>
 
             {/* ✅ New Plant Shop Link */}
-            <StyledLink to="/plant-shop" active={location.pathname === "/plant-shop" ? 1 : 0}>
+            <StyledLink to="/PlantShop" active={location.pathname === "/PlantShop" ? 1 : 0}>
               Plant Shop
             </StyledLink>
 

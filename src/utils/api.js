@@ -1,4 +1,4 @@
-const API_URL = (process.env.REACT_APP_API_BASE_URL || "http://localhost:5000") + "/api";
+const API_URL = "http://localhost:5000/api"; // Change to deployed URL later
 
 // =======================
 // Auth
@@ -50,6 +50,7 @@ const predictDisease = async (imageFile) => {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Prediction failed");
+
     return data; // { result: "Tomato___Late_blight" }
   } catch (err) {
     return { error: err.message };
@@ -57,7 +58,7 @@ const predictDisease = async (imageFile) => {
 };
 
 // =======================
-// Plant Shop APIs
+// Plant Shop
 // =======================
 const getPlants = async () => {
   try {
@@ -76,7 +77,7 @@ const buyPlant = async (plantId) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ plantId }),
-      credentials: "include", // if using cookies/auth
+      credentials: "include", // if using cookies
     });
 
     const data = await res.json();
@@ -88,7 +89,7 @@ const buyPlant = async (plantId) => {
 };
 
 // =======================
-// Export as a single object
+// Default Export (to match old style)
 // =======================
 const API = {
   registerUser,
