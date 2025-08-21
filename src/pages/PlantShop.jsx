@@ -32,10 +32,10 @@ const PlantShop = () => {
     }
   };
 
-  // Filter plants by search term, then push non-matches to bottom
+  // Filter + push non-matches to bottom
   const filteredPlants = plants
-    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .concat(plants.filter(p => !p.name.toLowerCase().includes(searchTerm.toLowerCase())));
+    .filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .concat(plants.filter((p) => !p.name.toLowerCase().includes(searchTerm.toLowerCase())));
 
   if (loading) return <p style={{ padding: "20px" }}>Loading plants...</p>;
   if (error) return <p style={{ padding: "20px", color: "red" }}>Error: {error}</p>;
@@ -57,7 +57,7 @@ const PlantShop = () => {
           marginBottom: "30px",
           fontSize: "16px",
           borderRadius: "6px",
-          border: "1px solid #ccc"
+          border: "1px solid #ccc",
         }}
       />
 
@@ -107,21 +107,20 @@ const PlantShop = () => {
               )}
               <h3 style={{ margin: "10px 0", fontSize: "18px" }}>{plant.name}</h3>
               <p style={{ margin: "6px 0", fontSize: "15px" }}>
-                <strong>${plant.priceUSD || plant.price}</strong>{" "}
-                {plant.pricePKR && (
-                  <span style={{ color: "#555" }}>({plant.pricePKR} PKR)</span>
-                )}
+                <strong>${plant.price}</strong>
               </p>
-              {plant.description && (
-                <p style={{
-                  fontSize: "14px",
-                  color: "#666",
-                  margin: "8px 0",
-                  minHeight: "40px",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis"
-                }}>
-                  {plant.description}
+              {plant.details && (
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#666",
+                    margin: "8px 0",
+                    minHeight: "40px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {plant.details}
                 </p>
               )}
               <button
