@@ -10,33 +10,41 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
+// 🌿 Animations
 const fadeIn = keyframes`
-  from {opacity: 0; transform: translateY(20px);}
+  from {opacity: 0; transform: translateY(30px);}
   to {opacity: 1; transform: translateY(0);}
+`;
+
+const float = keyframes`
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
 `;
 
 const Wrapper = styled.div`
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  background: linear-gradient(135deg, #f1f8e9, #e8f5e9);
   padding-bottom: 100px;
 `;
 
+/* 🌱 Hero Section */
 const HeroSection = styled.div`
   background: url("/img7.jpg") no-repeat center center/cover;
-  min-height: 70vh;
+  min-height: 80vh;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #fff;
   padding: 0 20px;
 
   &::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(0, 60, 30, 0.25);
+    background: rgba(0, 60, 30, 0.5);
+    backdrop-filter: blur(2px);
     z-index: 0;
   }
 
@@ -48,40 +56,69 @@ const HeroSection = styled.div`
   h1 {
     font-size: 4rem;
     margin-bottom: 16px;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 2px;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
   }
 
   p {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     max-width: 700px;
     margin: 0 auto 30px;
-    line-height: 1.4;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    line-height: 1.6;
+    color: #f5f5f5;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+  }
+`;
+
+/* 🌱 Floating Leaves */
+const FloatingLeaf = styled.div`
+  position: absolute;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  animation: ${float} 6s ease-in-out infinite;
+  pointer-events: none;
+
+  &:nth-child(1) {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+  &:nth-child(2) {
+    top: 60%;
+    left: 85%;
+    animation-delay: 1s;
+  }
+  &:nth-child(3) {
+    top: 75%;
+    left: 40%;
+    animation-delay: 2s;
   }
 `;
 
 const Button = styled.button`
-  background: #2e7d32;
+  background: linear-gradient(135deg, #43a047, #2e7d32);
   color: white;
   border: none;
-  padding: 14px 36px;
+  padding: 14px 40px;
   font-size: 1.1rem;
-  border-radius: 30px;
+  border-radius: 35px;
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.3s ease;
+  transition: 0.3s;
 
   &:hover {
-    background: #276628;
-    box-shadow: 0 4px 12px rgba(39,102,40,0.6);
+    background: linear-gradient(135deg, #388e3c, #1b5e20);
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   }
 `;
 
+/* 🌱 Generic Section */
 const Section = styled.section`
-  padding: 70px 30px;
-  max-width: 1000px;
+  padding: 80px 30px;
+  max-width: 1100px;
   margin: 0 auto;
   scroll-margin-top: 100px;
 `;
@@ -92,6 +129,17 @@ const Title = styled.h2`
   text-align: center;
   margin-bottom: 40px;
   font-weight: 700;
+  position: relative;
+
+  &::after {
+    content: "";
+    display: block;
+    margin: 12px auto 0;
+    width: 70px;
+    height: 4px;
+    border-radius: 2px;
+    background: #66bb6a;
+  }
 `;
 
 const Paragraph = styled.p`
@@ -122,6 +170,7 @@ const FeatureIcon = styled.span`
   color: #2e7d32;
 `;
 
+/* 🌱 Team Section */
 const TeamGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -133,20 +182,19 @@ const TeamCard = styled.div`
   background: #fff;
   border-radius: 20px;
   padding: 28px 24px;
-  width: 270px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  width: 280px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: default;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 
   &:hover {
-    transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.3);
   }
 
   img {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 20px;
@@ -156,14 +204,14 @@ const TeamCard = styled.div`
   h4 {
     color: #2e7d32;
     font-size: 1.3rem;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 700;
   }
 
   p {
     font-size: 1rem;
-    color: #666;
-    margin-bottom: 12px;
+    color: #555;
+    margin-bottom: 14px;
   }
 `;
 
@@ -176,26 +224,28 @@ const SocialIcons = styled.div`
   a {
     color: inherit;
     font-size: 1.3rem;
-    transition: color 0.3s ease;
+    transition: color 0.3s ease, transform 0.3s ease;
 
     &:hover {
-      color: #145214;
+      color: #1b5e20;
+      transform: scale(1.2);
     }
   }
 `;
 
+/* 🌱 Testimonials */
 const TestimonialSection = styled.section`
   background: #dcedc8;
-  padding: 60px 20px;
-  max-width: 800px;
-  margin: 80px auto 0 auto;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  padding: 60px 30px;
+  max-width: 850px;
+  margin: 100px auto 0 auto;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
   text-align: center;
 `;
 
 const TestimonialText = styled.p`
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   font-style: italic;
   color: #33691e;
   margin-bottom: 20px;
@@ -203,24 +253,29 @@ const TestimonialText = styled.p`
 
 const TestimonialAuthor = styled.h5`
   font-weight: 700;
+  font-size: 1.1rem;
   color: #2e7d32;
 `;
 
 const AboutUs = () => {
   const scrollToStory = () => {
     const element = document.getElementById("our-story");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    if (element) element.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <Wrapper>
       <HeroSection>
+        {/* Floating leaves 🌿 */}
+        <FloatingLeaf>🍃</FloatingLeaf>
+        <FloatingLeaf>🌱</FloatingLeaf>
+        <FloatingLeaf>🍂</FloatingLeaf>
+
         <div>
           <h1>PlantTaxa</h1>
           <p>
-            Empowering all people to be plant people — combining AI and nature to support the next generation of plant lovers and professionals.
+            Empowering all people to be plant people — combining AI and nature 
+            to support the next generation of plant lovers and professionals.
           </p>
           <Button onClick={scrollToStory}>Learn More</Button>
         </div>
@@ -229,11 +284,17 @@ const AboutUs = () => {
       <Section id="our-story">
         <Title>Our Story</Title>
         <Paragraph>
-          At <strong>PlantTaxa</strong>, our journey began with a simple question: <strong>What if technology could help us reconnect with nature?</strong>
+          At <strong>PlantTaxa</strong>, our journey began with a simple
+          question: <strong>What if technology could help us reconnect with nature?</strong>
           <br /><br />
-          What started as a university research project is now evolving into a smart ecosystem for everyone — from weekend gardeners to professional botanists. Whether you're identifying a plant, checking for diseases, or getting tips tailored to your climate, PlantTaxa is your green companion.
+          What started as a university research project is now evolving into
+          a smart ecosystem for everyone — from weekend gardeners to professional
+          botanists. Whether you're identifying a plant, checking for diseases,
+          or getting tips tailored to your climate, PlantTaxa is your green companion.
           <br /><br />
-          With a deep respect for biodiversity and the power of AI, we're reimagining the future of plant care — making it intelligent, accessible, and inspiring.
+          With a deep respect for biodiversity and the power of AI, we're
+          reimagining the future of plant care — making it intelligent,
+          accessible, and inspiring.
         </Paragraph>
 
         <Title>Vision & Future</Title>
@@ -253,29 +314,10 @@ const AboutUs = () => {
             <img src="/dani.jpg" alt="Daniyal Z." />
             <h4>Daniyal Sabir</h4>
             <p>Full Stack Web Developer</p>
-            
             <SocialIcons>
-              <a
-                href="https://www.linkedin.com/in/daniyal-sabir-76a01a324?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FaLinkedin />
-              </a>
-              <a
-                href="https://twitter.com/Danirajpoot8074"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FaTwitter />
-              </a>
-              <a
-                href="https://github.com/Daniyalhhgg"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FaGithub />
-              </a>
+              <a href="https://www.linkedin.com/in/daniyal-sabir-76a01a324" target="_blank" rel="noreferrer"><FaLinkedin /></a>
+              <a href="https://twitter.com/Danirajpoot8074" target="_blank" rel="noreferrer"><FaTwitter /></a>
+              <a href="https://github.com/Daniyalhhgg" target="_blank" rel="noreferrer"><FaGithub /></a>
             </SocialIcons>
           </TeamCard>
 
@@ -305,9 +347,10 @@ const AboutUs = () => {
 
       <TestimonialSection>
         <TestimonialText>
-          “PlantTaxa has revolutionized how I care for my garden. The AI suggestions are accurate and timely!”
+          “PlantTaxa has revolutionized how I care for my garden.  
+          The AI suggestions are accurate and timely!”
         </TestimonialText>
-        <TestimonialAuthor>plant-taxa.vercel.app</TestimonialAuthor>
+        <TestimonialAuthor>🌍 plant-taxa.vercel.app</TestimonialAuthor>
       </TestimonialSection>
     </Wrapper>
   );

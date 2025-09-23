@@ -1,5 +1,5 @@
 // src/App.js
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -15,19 +15,26 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ClimateAdvice from "./pages/ClimateAdvice";
 import PlantShop from "./pages/PlantShop";
-
-
+import Checkout from "./pages/Checkout";   // ✅ NEW import
+import MyOrders from "./pages/MyOrders";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function App() {
+// 👇 Layout component jisme navbar control karenge
+function AppLayout() {
+  const location = useLocation();
+
+  // ✅ Agar dashboard page par ho to Navbar hide kar do
+  const hideNavbar = location.pathname.startsWith("/dashboard");
+
   return (
-    <BrowserRouter>
-      <Navbar />
+    <>
+      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/Profile" element={<Profile />} />
@@ -38,11 +45,19 @@ function App() {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/forum" element={<Forum />} />
           <Route path="/ClimateAdvice" element={<ClimateAdvice />} />
-               <Route path="/PlantShop" element={<PlantShop/>} />
-
+          <Route path="/PlantShop" element={<PlantShop />} />
+          <Route path="/checkout/:plantId" element={<Checkout />} /> {/* ✅ NEW route */}
+          <Route path="/my-orders" element={<MyOrders />} />
         </Route>
       </Routes>
+    </>
+  );
+}
 
+function App() {
+  return (
+    <BrowserRouter>
+      <AppLayout />
       {/* Toasts will be available on all pages */}
       <ToastContainer position="top-center" autoClose={3000} />
     </BrowserRouter>

@@ -7,149 +7,89 @@ import { FaReply, FaEdit, FaTrash } from "react-icons/fa";
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
 const lightTheme = {
-  bg: "#f5f5f5",
-  text: "#1a1a1a",
-  bubbleSelf: "#a7e4a0",
-  bubbleOthers: "#ffffff",
+  mode: "light",
+  bg: "#f0f2f5",
+  text: "#111",
+  bubbleSelf: "#d9fdd3",
+  bubbleOthers: "#fff",
   border: "#25d366",
-  replyBg: "#e0e0e0",
-  replyBorder: "#b0b0b0",
+  replyBg: "#ededed",
+  replyBorder: "#bdbdbd",
 };
 
 const darkTheme = {
-  bg: "#1a1a1a",
-  text: "#f0f0f0",
-  bubbleSelf: "#00a884",
-  bubbleOthers: "#2d3a45",
+  mode: "dark",
+  bg: "#111b21",
+  text: "#e9edef",
+  bubbleSelf: "#005c4b",
+  bubbleOthers: "#202c33",
   border: "#25d366",
-  replyBg: "#252525",
-  replyBorder: "#4a4a4a",
+  replyBg: "#2a3942",
+  replyBorder: "#3c4b52",
 };
 
 const Container = styled.div`
-  max-width: 1100px;
-  margin: 16px auto;
-  height: calc(100vh - 32px);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  background: ${({ theme }) => theme.bg};
-  color: ${({ theme }) => theme.text};
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  padding: 0 12px;
+  width: 100vw;
+  height: 88vh;
   display: flex;
   flex-direction: column;
-  @media (max-width: 768px) {
-    margin: 8px;
-    padding: 0 8px;
-    height: calc(100vh - 16px);
-  }
-  @media (max-width: 480px) {
-    margin: 4px;
-    padding: 0 4px;
-    height: calc(100vh - 8px);
-  }
+  background: ${({ theme }) => theme.bg};
+  color: ${({ theme }) => theme.text};
+  overflow: hidden; /* Prevent body scroll */
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 `;
 
 const Header = styled.header`
-  height: 56px;
+  flex-shrink: 0;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: ${({ theme }) => (theme === darkTheme ? "#1f2a31" : "#ffffff")};
-  border-radius: 12px 12px 0 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 0 16px;
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: ${({ theme }) => theme.text};
-  user-select: none;
-  @media (max-width: 480px) {
-    height: 48px;
-    font-size: 1.1rem;
-    padding: 0 12px;
-  }
+  padding: 0 20px;
+  background: ${({ theme }) => (theme.mode === "dark" ? "#202c33" : "#fff")};
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  font-size: 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 `;
 
 const ToggleModeBtn = styled.button`
   background: none;
   border: none;
   color: ${({ theme }) => theme.border};
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 1rem;
-  padding: 8px 12px;
+  padding: 6px 12px;
   border-radius: 8px;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  min-width: 44px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: 0.25s ease;
   &:hover {
     background: ${({ theme }) => theme.border};
-    color: white;
-    transform: scale(1.05);
-  }
-  @media (max-width: 480px) {
-    font-size: 0.9rem;
-    padding: 6px 10px;
+    color: #fff;
   }
 `;
 
 const MessageList = styled.div`
   flex: 1;
-  padding: 16px;
   overflow-y: auto;
+  padding: 20px;
   display: flex;
   flex-direction: column-reverse;
   gap: 12px;
-  background: ${({ theme }) => (theme === darkTheme ? "#111b21" : "#ece5dd")};
-  border-radius: 0 0 10px 10px;
-  overscroll-behavior: contain;
-  @media (max-width: 768px) {
-    padding: 12px;
-    gap: 10px;
-  }
-  @media (max-width: 480px) {
-    padding: 8px;
-    gap: 8px;
-  }
 `;
 
 const Bubble = styled(motion.div)`
-  max-width: 70%;
-  background-color: ${({ isSelf, theme }) =>
-    isSelf ? theme.bubbleSelf : theme.bubbleOthers};
-  padding: 10px 14px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  align-self: ${({ isSelf }) => (isSelf ? "flex-end" : "flex-start")};
-  position: relative;
+  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 12px;
   font-size: 1rem;
+  line-height: 1.4;
   word-break: break-word;
-  &:after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    ${({ isSelf }) => (isSelf ? "right: -8px;" : "left: -8px;")}
-    width: 0;
-    height: 0;
-    border: 8px solid transparent;
-    border-top-color: ${({ isSelf, theme }) =>
-      isSelf ? theme.bubbleSelf : theme.bubbleOthers};
-    border-bottom: 0;
-    margin-bottom: -8px;
-  }
-  @media (max-width: 768px) {
-    max-width: 80%;
-    font-size: 0.95rem;
-    padding: 8px 12px;
-  }
-  @media (max-width: 480px) {
-    max-width: 90%;
-    font-size: 0.9rem;
-    padding: 6px 10px;
-  }
+  align-self: ${({ isSelf }) => (isSelf ? "flex-end" : "flex-start")};
+  background: ${({ isSelf, theme }) =>
+    isSelf ? theme.bubbleSelf : theme.bubbleOthers};
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 `;
 
 const Avatar = styled.div`
@@ -157,58 +97,38 @@ const Avatar = styled.div`
   height: 32px;
   border-radius: 50%;
   background: ${({ theme }) => theme.border};
-  color: white;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
   margin-${({ isSelf }) => (isSelf ? "left" : "right")}: 8px;
-  flex-shrink: 0;
-  @media (max-width: 480px) {
-    width: 28px;
-    height: 28px;
-    font-size: 0.8rem;
-    margin-${({ isSelf }) => (isSelf ? "left" : "right")}: 6px;
-  }
 `;
 
 const MessageHeader = styled.div`
   display: flex;
   justify-content: space-between;
+  font-size: 0.8rem;
   margin-bottom: 6px;
-  font-size: 0.9rem;
-  color: ${({ theme }) => `${theme.text}cc`};
-  font-weight: 500;
-  @media (max-width: 480px) {
-    font-size: 0.85rem;
-  }
+  color: ${({ theme }) => `${theme.text}aa`};
 `;
 
 const ReplyPreview = styled.div`
   background: ${({ theme }) => theme.replyBg};
   border-left: 4px solid ${({ theme }) => theme.replyBorder};
-  padding: 8px 12px;
-  margin-bottom: 8px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
   border-radius: 6px;
-  color: ${({ theme }) => theme.text};
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  @media (max-width: 480px) {
-    font-size: 0.85rem;
-    padding: 6px 10px;
-  }
 `;
 
 const ActionGroup = styled.div`
   margin-top: 8px;
   display: flex;
   gap: 12px;
-  @media (max-width: 480px) {
-    gap: 8px;
-  }
 `;
 
 const ActionBtn = styled.button`
@@ -216,50 +136,24 @@ const ActionBtn = styled.button`
   border: none;
   color: ${({ theme }) => theme.border};
   cursor: pointer;
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   display: flex;
   align-items: center;
   gap: 4px;
-  position: relative;
-  transition: color 0.25s ease;
-  min-height: 44px;
   &:hover {
     color: #128c7e;
     text-decoration: underline;
   }
-  &:hover:after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: ${({ theme }) => theme.text};
-    color: ${({ theme }) => theme.bg};
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    z-index: 10;
-  }
-  @media (max-width: 480px) {
-    font-size: 0.8rem;
-    gap: 3px;
-  }
 `;
 
 const InputWrapper = styled.form`
-  border-top: 1px solid #ccc;
-  background: ${({ theme }) => (theme === darkTheme ? "#1f2a31" : "#ffffff")};
+  flex-shrink: 0;
   padding: 12px 16px;
+  background: ${({ theme }) => (theme.mode === "dark" ? "#202c33" : "#fff")};
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap;
-  @media (max-width: 480px) {
-    padding: 8px 12px;
-    gap: 8px;
-  }
+  gap: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const InputArea = styled.textarea`
@@ -267,30 +161,23 @@ const InputArea = styled.textarea`
   border: none;
   border-radius: 20px;
   padding: 10px 14px;
-  min-height: 40px;
-  max-height: 100px;
+  min-height: 42px;
+  max-height: 120px;
   resize: none;
-  line-height: 1.5;
   font-size: 1rem;
   font-family: inherit;
-  background: ${({ theme }) => (theme === darkTheme ? "#2a3942" : "#fff")};
+  background: ${({ theme }) => (theme.mode === "dark" ? "#2a3942" : "#fefefe")};
   color: ${({ theme }) => theme.text};
-  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.1);
   &:focus {
     outline: none;
     box-shadow: 0 0 4px ${({ theme }) => theme.border};
   }
-  @media (max-width: 480px) {
-    font-size: 0.9rem;
-    padding: 8px 12px;
-    min-height: 36px;
-  }
 `;
 
 const SendBtn = styled.button`
-  background: linear-gradient(135deg, ${({ theme }) => theme.border}, #1aa179);
+  background: ${({ theme }) => theme.border};
   border: none;
-  color: white;
+  color: #fff;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -299,53 +186,22 @@ const SendBtn = styled.button`
   justify-content: center;
   align-items: center;
   font-size: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, background-color 0.3s ease;
-  flex-shrink: 0;
+  transition: 0.25s ease;
   &:hover {
     transform: scale(1.1);
-    background: #1aa179;
+    background: #128c7e;
   }
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-  @media (max-width: 480px) {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-  }
-`;
-
-const ClearBtn = styled.button`
-  align-self: flex-start;
-  margin: 12px 0;
-  background: none;
-  border: none;
-  color: ${({ theme }) => theme.border};
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.9rem;
-  user-select: none;
-  min-height: 44px;
-  &:hover {
-    text-decoration: underline;
-  }
-  @media (max-width: 480px) {
-    font-size: 0.85rem;
-    margin: 8px 0;
   }
 `;
 
 const Loading = styled.div`
   text-align: center;
   padding: 16px;
+  font-size: 0.9rem;
   color: ${({ theme }) => `${theme.text}99`};
-  font-size: 1rem;
-  @media (max-width: 480px) {
-    font-size: 0.9rem;
-    padding: 12px;
-  }
 `;
 
 const Forum = () => {
@@ -375,14 +231,6 @@ const Forum = () => {
     if (messageListRef.current) messageListRef.current.scrollTop = 0;
   }, [messages]);
 
-  useEffect(() => {
-    const textarea = document.querySelector("textarea");
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  }, [input]);
-
   const fetchMessages = async () => {
     setIsLoading(true);
     try {
@@ -399,7 +247,6 @@ const Forum = () => {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
-    setIsLoading(true);
     const url = editId ? `${API_BASE_URL}/api/forum/${editId}` : `${API_BASE_URL}/api/forum`;
     const method = editId ? "PUT" : "POST";
     try {
@@ -417,8 +264,6 @@ const Forum = () => {
       fetchMessages();
     } catch (err) {
       console.error("Failed to send message:", err);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -436,20 +281,6 @@ const Forum = () => {
     }
   };
 
-  const handleEdit = (msg) => {
-    setInput(msg.content);
-    setEditId(msg._id);
-    setReplyTo(msg.replyTo || null);
-  };
-
-  const handleReply = (msg) => setReplyTo(msg);
-  const cancelReply = () => setReplyTo(null);
-
-  const handleClearMyMessages = () => {
-    const userMsgs = messages.filter((msg) => msg.user?._id === userId);
-    userMsgs.forEach(async (msg) => await handleDelete(msg._id));
-  };
-
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <Container>
@@ -459,8 +290,6 @@ const Forum = () => {
             {darkMode ? "☀️ Light" : "🌙 Dark"}
           </ToggleModeBtn>
         </Header>
-
-        <ClearBtn onClick={handleClearMyMessages}>Clear My Messages</ClearBtn>
 
         <MessageList ref={messageListRef}>
           {isLoading && <Loading>Loading...</Loading>}
@@ -479,7 +308,10 @@ const Forum = () => {
                   <div style={{ flex: 1 }}>
                     {msg.replyTo && (
                       <ReplyPreview>
-                        <span>Replying to: {msg.replyTo.content?.slice(0, 80)}...</span>
+                        <span>
+                          Replying to: {msg.replyTo.content?.slice(0, 80)}
+                          {msg.replyTo.content?.length > 80 ? "..." : ""}
+                        </span>
                       </ReplyPreview>
                     )}
                     <MessageHeader>
@@ -493,15 +325,15 @@ const Forum = () => {
                     </MessageHeader>
                     <div>{msg.content}</div>
                     <ActionGroup>
-                      <ActionBtn onClick={() => handleReply(msg)} data-tooltip="Reply">
+                      <ActionBtn onClick={() => setReplyTo(msg)}>
                         <FaReply /> Reply
                       </ActionBtn>
                       {isSelf && (
                         <>
-                          <ActionBtn onClick={() => handleEdit(msg)} data-tooltip="Edit">
+                          <ActionBtn onClick={() => {setInput(msg.content); setEditId(msg._id);}}>
                             <FaEdit /> Edit
                           </ActionBtn>
-                          <ActionBtn onClick={() => handleDelete(msg._id)} data-tooltip="Delete">
+                          <ActionBtn onClick={() => handleDelete(msg._id)}>
                             <FaTrash /> Delete
                           </ActionBtn>
                         </>
@@ -517,10 +349,11 @@ const Forum = () => {
 
         {replyTo && (
           <ReplyPreview>
-            <span>Replying to: {replyTo.content?.slice(0, 80)}...</span>
-            <ActionBtn onClick={cancelReply} data-tooltip="Cancel Reply">
-              Cancel
-            </ActionBtn>
+            <span>
+              Replying to: {replyTo.content?.slice(0, 80)}
+              {replyTo.content?.length > 80 ? "..." : ""}
+            </span>
+            <ActionBtn onClick={() => setReplyTo(null)}>Cancel</ActionBtn>
           </ReplyPreview>
         )}
 
@@ -537,7 +370,9 @@ const Forum = () => {
               }
             }}
           />
-          <SendBtn type="submit" disabled={!input.trim()}>✈️</SendBtn>
+          <SendBtn type="submit" disabled={!input.trim()}>
+            ✈️
+          </SendBtn>
         </InputWrapper>
       </Container>
     </ThemeProvider>

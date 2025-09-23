@@ -8,8 +8,8 @@ const ContactUs = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(null);
-  const [loading, setLoading] = useState(false); // Task 1: Loading state
-  const [errors, setErrors] = useState({}); // Task 2: Form validation
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
@@ -32,20 +32,19 @@ const ContactUs = () => {
     }
     setErrors({});
     setLoading(true);
-    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+    const API_BASE_URL =
+      process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
     try {
-      const response = await axios.post(
+      await axios.post(
         `${API_BASE_URL}/api/contact`,
         { name, email, message },
         { headers: { "Content-Type": "application/json" } }
       );
-      console.log("Form submission response:", response.data); // Use response to avoid linting
       setSuccess(true);
       setName("");
       setEmail("");
       setMessage("");
     } catch (error) {
-      console.error("Form submission error:", error.response?.data || error.message);
       setSuccess(false);
     } finally {
       setLoading(false);
@@ -59,172 +58,205 @@ const ContactUs = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <ContentWrapper>
-        <Title>Contact Us</Title>
-        <Paragraph>
-          Have a question or feedback? We'd love to hear from you! <br />
-          📧 Email: <strong>F2021065221@umt.edu.pk</strong>
-        </Paragraph>
+      <Overlay />
+      <Wrapper>
+        {/* Left Side */}
+        <InfoSection
+          as={motion.div}
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+        >
+          <h1>Let’s Connect 🌱</h1>
+          <p>
+            Have questions, feedback, or ideas?  
+            Our team at <strong>PlantTaxa</strong> would love to hear from you.  
+            Drop us a message and we’ll get back shortly.
+          </p>
+          <ContactDetails>
+            <span>📧 f2021065221@umt.edu.pk</span>
+            <span>🌍 www.planttaxa.com</span>
+          </ContactDetails>
+        </InfoSection>
 
-        <Form onSubmit={handleSubmit}>
+        {/* Right Side */}
+        <FormCard
+          as={motion.form}
+          onSubmit={handleSubmit}
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+        >
+          <h2>Contact Us</h2>
           <Input
             type="text"
             placeholder="Your Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
             error={errors.name}
           />
           {errors.name && <Error>{errors.name}</Error>}
+
           <Input
             type="email"
             placeholder="Your Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
             error={errors.email}
           />
           {errors.email && <Error>{errors.email}</Error>}
+
           <TextArea
             placeholder="Your Message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows="5"
-            required
             error={errors.message}
           />
           {errors.message && <Error>{errors.message}</Error>}
+
           <Button type="submit" disabled={loading}>
             {loading ? "Sending..." : "Send Message"}
           </Button>
-        </Form>
 
-        {success === true && <Success>✅ Message sent successfully!</Success>}
-        {success === false && (
-          <Error>❌ Failed to send message. Please try again later.</Error>
-        )}
-      </ContentWrapper>
+          {success === true && (
+            <Success>✅ Message sent successfully!</Success>
+          )}
+          {success === false && (
+            <Error>❌ Failed to send message. Try again later.</Error>
+          )}
+        </FormCard>
+      </Wrapper>
     </Container>
   );
 };
 
 export default ContactUs;
 
-// Styled Components
+/* 🎨 Styled Components */
 const Container = styled.div`
   position: relative;
   min-height: 100vh;
-  padding: 60px 30px;
-  font-family: 'Segoe UI', sans-serif;
-  color: #2e7d32;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6") center/cover no-repeat;
-    background-size: cover;
-    z-index: -2;
-  }
-
-  &::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 100, 30, 0.6); /* dark green overlay */
-    z-index: -1;
-    pointer-events: none;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6")
+    center/cover no-repeat;
 `;
 
-const ContentWrapper = styled.div`
+const Overlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 100, 30, 0.8),
+    rgba(0, 50, 20, 0.9)
+  );
+`;
+
+const Wrapper = styled.div`
   position: relative;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.85); /* white translucent background */
-  padding: 40px;
-  max-width: 650px;
-  margin: 0 auto;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  max-width: 1000px;
+  width: 100%;
+  padding: 30px;
+  z-index: 2;
 `;
 
-const Title = styled.h2`
-  color: #2e7d32;
-  font-size: 2.5rem;
-  text-align: center;
-  margin-bottom: 20px;
+const InfoSection = styled.div`
+  flex: 1;
+  color: #fff;
+  padding: 20px;
+  h1 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+  }
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
 `;
 
-const Paragraph = styled.p`
-  color: #444;
-  font-size: 1.1rem;
-  text-align: center;
-  margin-bottom: 40px;
-`;
-
-const Form = styled.form`
+const ContactDetails = styled.div`
+  margin-top: 20px;
+  font-size: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
+`;
+
+const FormCard = styled.div`
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 30px;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  h2 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #e8f5e9;
+  }
+  display: flex;
+  flex-direction: column;
 `;
 
 const Input = styled.input`
+  margin-bottom: 10px;
   padding: 12px;
+  border-radius: 10px;
+  border: 1px solid ${({ error }) => (error ? "red" : "transparent")};
   font-size: 1rem;
-  border: 1px solid ${({ error }) => (error ? "red" : "#ccc")};
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
   &:focus {
     outline: none;
-    border-color: ${({ error }) => (error ? "red" : "#2e7d32")};
+    border-color: #2e7d32;
   }
 `;
 
 const TextArea = styled.textarea`
+  margin-bottom: 10px;
   padding: 12px;
+  border-radius: 10px;
+  border: 1px solid ${({ error }) => (error ? "red" : "transparent")};
   font-size: 1rem;
-  border: 1px solid ${({ error }) => (error ? "red" : "#ccc")};
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
   resize: none;
   &:focus {
     outline: none;
-    border-color: ${({ error }) => (error ? "red" : "#2e7d32")};
+    border-color: #2e7d32;
   }
 `;
 
 const Button = styled.button`
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #66bb6a, #2e7d32);
   color: white;
-  padding: 10px;
-  font-weight: bold;
+  padding: 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 10px;
   transition: 0.3s;
-
   &:hover:not(:disabled) {
-    background-color: #2e7d32;
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #43a047, #1b5e20);
   }
 `;
 
 const Success = styled.div`
-  margin-top: 1.5rem;
-  color: #2e7d32;
+  margin-top: 1rem;
+  color: #c8e6c9;
   font-weight: 600;
   text-align: center;
 `;
 
 const Error = styled.div`
-  margin-top: 0.5rem;
-  color: red;
-  font-weight: 600;
+  margin-top: 0.3rem;
+  color: #ff5252;
+  font-weight: 500;
   font-size: 0.9rem;
-  text-align: left;
 `;
+

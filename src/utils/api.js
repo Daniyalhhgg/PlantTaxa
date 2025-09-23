@@ -1,106 +1,124 @@
-const API_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://upbeat-rejoicing-production.up.railway.app/api"
-    : "http://localhost:5000/api";
+import axios from "axios";
 
+// ----------------------
+// 🔗 Base URL
+// ----------------------
+const API = axios.create({
+  baseURL:
+    process.env.NODE_ENV === "production"
+      ? "https://upbeat-rejoicing-production.up.railway.app/api"
+      : "http://localhost:5000/api",
+});
 
-// =======================
-// Auth
-// =======================
-const registerUser = async (userData) => {
+// 🔑 Automatically attach JWT token (agar login ke baad localStorage me save hai)
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// ----------------------
+// ✅ Auth
+// ----------------------
+export const registerUser = async (userData) => {
   try {
-    const res = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || "Registration failed");
+    const { data } = await API.post("/auth/register", userData);
     return data;
   } catch (err) {
-    return { error: err.message };
+    return { error: err.response?.data?.msg || err.message };
   }
 };
 
-const loginUser = async (credentials) => {
+export const loginUser = async (credentials) => {
   try {
-    const res = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || "Login failed");
+    const { data } = await API.post("/auth/login", credentials);
     return data;
   } catch (err) {
-    return { error: err.message };
+    return { error: err.response?.data?.msg || err.message };
   }
 };
 
-// =======================
-// Disease Prediction
-// =======================
-const predictDisease = async (imageFile) => {
+// ----------------------
+// ✅ Disease Prediction
+// ----------------------
+export const predictDisease = async (imageFile) => {
   try {
     const formData = new FormData();
     formData.append("image", imageFile);
-
-    const res = await fetch(`${API_URL}/disease/upload`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Prediction failed");
-
-    return data; // { result: "Tomato___Late_blight" }
+    const { data } = await API.post("/disease/upload", formData);
+    return data; // e.g. { result: "Tomato___Late_blight" }
   } catch (err) {
-    return { error: err.message };
+    return { error: err.response?.data?.error || err.message };
   }
 };
 
-// =======================
-// Plant Shop
-// =======================
-const getPlants = async () => {
+// ----------------------
+// ✅ Plant Shop
+// ----------------------
+export const getPlants = async () => {
   try {
-    const res = await fetch(`${API_URL}/plants`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed to fetch plants");
-    return data; // expected: [ { _id, name, price, imageUrl }, ... ]
+    const { data } = await API.get("/plants");
+    return data;
   } catch (err) {
-    return { error: err.message };
+    return { error: err.response?.data?.error || err.message };
   }
 };
 
-const buyPlant = async (plantId) => {
+export const getPlantById = async (id) => {
   try {
-    const res = await fetch(`${API_URL}/orders`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plantId }),
-      credentials: "include", // if using cookies
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Order failed");
-    return data; // expected: { msg: "Order placed successfully" }
+    const { data } = await API.get(`/plants/${id}`);
+    return data;
   } catch (err) {
-    return { error: err.message };
+    return { error: err.response?.data?.error || err.message };
   }
 };
 
-// =======================
-// Default Export (to match old style)
-// =======================
-const API = {
-  registerUser,
-  loginUser,
-  predictDisease,
-  getPlants,
-  buyPlant,
+// ----------------------
+// ✅ Orders
+// ----------------------
+
+// Quick order – single quantity, default COD
+export const buyPlant = async (plantId) => {
+  try {
+    const { data } = await API.post("/orders", { plantId });
+    return data; // { msg: "Order placed successfully" }
+  } catch (err) {
+    return { error: err.response?.data?.error || err.message };
+  }
 };
+
+// Checkout page – full order with quantity, address, etc.
+export const placeOrder = async (orderData) => {
+  try {
+    const { data } = await API.post("/orders", orderData);
+    return data; // { msg: "Order placed successfully" }
+  } catch (err) {
+    return { error: err.response?.data?.error || err.message };
+  }
+};
+
+// 🔑 Get logged-in user's orders
+export const getMyOrders = async () => {
+  try {
+    const { data } = await API.get("/orders/my");
+    return data; // array of orders
+  } catch (err) {
+    return { error: err.response?.data?.error || err.message };
+  }
+};
+
+// ----------------------
+// ✅ Attach helpers to default export for API.getXYZ() usage
+// ----------------------
+API.registerUser = registerUser;
+API.loginUser = loginUser;
+API.predictDisease = predictDisease;
+API.getPlants = getPlants;
+API.getPlantById = getPlantById;
+API.buyPlant = buyPlant;
+API.placeOrder = placeOrder;
+API.getMyOrders = getMyOrders;
 
 export default API;

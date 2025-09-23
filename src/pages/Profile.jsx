@@ -7,9 +7,10 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:500
 
 const Background = styled.div`
   font-family: 'Segoe UI', sans-serif;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
   background: url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6") center/cover no-repeat;
-  padding: 60px 20px;
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -18,7 +19,7 @@ const Background = styled.div`
 
   &::before {
     content: "";
-    background: rgba(0, 60, 30, 0.8);
+    background: rgba(0, 60, 30, 0.85);
     position: absolute;
     top: 0; left: 0;
     width: 100%;
@@ -26,69 +27,80 @@ const Background = styled.div`
     z-index: 0;
   }
 
-  > * {
-    position: relative;
-    z-index: 1;
-  }
+  > * { position: relative; z-index: 1; }
 `;
 
 const Container = styled.div`
   width: 100%;
-  max-width: 600px;
+  max-width: 450px;
+  height: 90vh;
   background: rgba(255, 255, 255, 0.1);
-  padding: 30px;
+  padding: 25px 20px;
   border-radius: 20px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(12px);
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+
+  @media(max-width: 480px) {
+    max-width: 90%;
+    height: 85vh;
+    padding: 20px 15px;
+  }
 `;
 
 const Title = styled.h2`
-  text-align: center;
+  font-size: 1.7rem;
   color: #c8ffc8;
-  margin-bottom: 25px;
+  margin-bottom: 10px;
+
+  @media(max-width: 480px) { font-size: 1.4rem; }
 `;
 
 const ProfileImageWrapper = styled.div`
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
-  position: relative;
+  margin-bottom: 10px;
   cursor: pointer;
 `;
 
-const HiddenFileInput = styled.input`
-  display: none;
-`;
+const HiddenFileInput = styled.input` display: none; `;
 
 const ProfileImage = styled.img`
-  width: 130px;
-  height: 130px;
+  width: 110px;
+  height: 110px;
   object-fit: cover;
   border-radius: 50%;
-  border: 4px solid #4caf50;
-  background: #eee;
+  border: 3px solid #4caf50;
   transition: 0.3s ease;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 
-  &:hover {
-    opacity: 0.85;
+  &:hover { opacity: 0.85; }
+
+  @media(max-width: 480px) {
+    width: 90px;
+    height: 90px;
+    border: 2px solid #4caf50;
   }
 `;
 
 const Label = styled.label`
   font-weight: 600;
-  margin: 10px 0 5px;
+  margin: 5px 0 3px;
   display: block;
   color: #e0f7e9;
+  text-align: left;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 12px 15px;
-  border-radius: 10px;
-  font-size: 1rem;
-  margin-bottom: 15px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -104,56 +116,46 @@ const Input = styled.input`
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
     outline: none;
   }
+
+  @media(max-width: 480px) { padding: 8px 10px; font-size: 0.9rem; }
 `;
 
 const Button = styled.button`
   width: 100%;
   background: #4caf50;
   color: white;
-  padding: 14px;
-  font-size: 1rem;
+  padding: 12px;
+  font-size: 0.95rem;
   font-weight: bold;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
-  margin-top: 10px;
 
-  &:hover {
-    background: #388e3c;
-  }
+  &:hover { background: #388e3c; }
+  &:active { transform: scale(0.98); }
+  &:disabled { background: #a5d6a7; cursor: not-allowed; }
 
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &:disabled {
-    background: #a5d6a7;
-    cursor: not-allowed;
-  }
+  @media(max-width: 480px) { padding: 10px; font-size: 0.9rem; }
 `;
 
 const LogoutBtn = styled(Button)`
   background: #e53935;
-  margin-top: 20px;
+  margin-top: 5px;
 
-  &:hover {
-    background: #c62828;
-  }
+  &:hover { background: #c62828; }
 `;
 
 const LoadingSpinner = styled.div`
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border: 3px solid rgba(255,255,255,.3);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s ease-in-out infinite;
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 `;
 
 const Profile = () => {
@@ -171,9 +173,7 @@ const Profile = () => {
       if (!token) throw new Error("No authentication token found");
 
       const res = await fetch(`${API_BASE_URL}/api/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) throw new Error(res.status === 401 ? "Session expired" : "Failed to fetch profile");
@@ -183,27 +183,20 @@ const Profile = () => {
       setPhone(data.phone || "");
       setPhoto(data.photo || "");
     } catch (err) {
-      console.error("Profile fetch error:", err);
+      console.error(err);
       toast.error(err.message);
       if (err.message === "Session expired") logout();
-    } finally {
-      setIsLoading(false);
-    }
+    } finally { setIsLoading(false); }
   }, []);
 
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+  useEffect(() => { fetchProfile(); }, [fetchProfile]);
 
   const handleUpdate = async () => {
     setIsUpdating(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/profile`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ phone, photo }),
       });
 
@@ -212,12 +205,8 @@ const Profile = () => {
 
       setProfile(data);
       toast.success("Profile updated successfully!");
-    } catch (err) {
-      console.error("Update error:", err);
-      toast.error(err.message);
-    } finally {
-      setIsUpdating(false);
-    }
+    } catch (err) { console.error(err); toast.error(err.message); }
+    finally { setIsUpdating(false); }
   };
 
   const handleImageClick = () => fileInputRef.current.click();
@@ -225,77 +214,58 @@ const Profile = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
     if (!file.type.match('image.*')) return toast.error("Please select an image file");
-    if (file.size > 2 * 1024 * 1024) return toast.error("Image size should be less than 2MB");
+    if (file.size > 2 * 1024 * 1024) return toast.error("Image size should be < 2MB");
 
     const reader = new FileReader();
     reader.onloadend = () => setPhoto(reader.result);
     reader.readAsDataURL(file);
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
+  const logout = () => { localStorage.removeItem("token"); window.location.href = "/login"; };
 
-  if (isLoading) {
-    return (
-      <Background>
-        <Container>Loading your profile...</Container>
-      </Background>
-    );
-  }
+  if (isLoading) return (
+    <Background>
+      <Container>Loading your profile...</Container>
+    </Background>
+  );
 
-  if (!profile) {
-    return (
-      <Background>
-        <Container>
-          <p>Failed to load profile. Please try again.</p>
-          <Button onClick={fetchProfile}>Retry</Button>
-        </Container>
-      </Background>
-    );
-  }
+  if (!profile) return (
+    <Background>
+      <Container>
+        <p>Failed to load profile. Please try again.</p>
+        <Button onClick={fetchProfile}>Retry</Button>
+      </Container>
+    </Background>
+  );
 
   return (
     <Background>
       <ToastContainer position="top-center" autoClose={3000} />
       <Container>
-        <Title>🌿 My Profile</Title>
+        <div>
+          <Title>🌿 My Profile</Title>
+          <ProfileImageWrapper onClick={handleImageClick}>
+            <ProfileImage src={photo || "https://via.placeholder.com/130?text=Upload+Photo"} alt="Profile" />
+            <HiddenFileInput ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} />
+          </ProfileImageWrapper>
 
-        <ProfileImageWrapper onClick={handleImageClick}>
-          <ProfileImage 
-            src={photo || "https://via.placeholder.com/130?text=Upload+Photo"} 
-            alt="Profile" 
-          />
-          <HiddenFileInput
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-        </ProfileImageWrapper>
+          <Label>Full Name</Label>
+          <Input value={profile.name || ""} disabled />
 
-        <Label>Full Name</Label>
-        <Input value={profile.name || ""} disabled />
+          <Label>Email Address</Label>
+          <Input value={profile.email || ""} disabled />
 
-        <Label>Email Address</Label>
-        <Input value={profile.email || ""} disabled />
+          <Label>Phone Number</Label>
+          <Input type="tel" placeholder="Enter phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        </div>
 
-        <Label>Phone Number</Label>
-        <Input
-          type="tel"
-          placeholder="Enter phone number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-
-        <Button onClick={handleUpdate} disabled={isUpdating || !phone.trim()}>
-          {isUpdating ? <LoadingSpinner /> : "Update Profile"}
-        </Button>
-
-        <LogoutBtn onClick={logout}>🚪 Sign Out</LogoutBtn>
+        <div>
+          <Button onClick={handleUpdate} disabled={isUpdating || !phone.trim()}>
+            {isUpdating ? <LoadingSpinner /> : "Update Profile"}
+          </Button>
+          <LogoutBtn onClick={logout}>🚪 Sign Out</LogoutBtn>
+        </div>
       </Container>
     </Background>
   );
