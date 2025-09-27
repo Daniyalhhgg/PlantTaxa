@@ -220,27 +220,27 @@ const Navbar = () => {
       <NavLinks>
         {isAuthenticated() ? (
           <>
-            <StyledLink to="/dashboard" active={location.pathname === "/dashboard" ? 1 : 0}>Dashboard🏠</StyledLink>
+            {/* ✅ Only 3 main buttons outside */}
+            <StyledLink to="/dashboard" active={location.pathname === "/dashboard" ? 1 : 0}>Dashboard 🏠</StyledLink>
+            <StyledLink to="/PlantShop" active={location.pathname === "/PlantShop" ? 1 : 0}>Shop 🛒</StyledLink>
+            <StyledLink to="/ChatBot" active={location.pathname === "/ChatBot" ? 1 : 0}>ChatBot 🤖</StyledLink>
 
-            {/* ✅ Icon on top, text below */}
+            {/* ✅ Profile icon (always visible) */}
             <ProfileLink to="/profile" active={location.pathname === "/profile" ? 1 : 0}>
               <FaUser />
-              
+              Profile
             </ProfileLink>
 
-            <StyledLink to="/PlantShop" active={location.pathname === "/PlantShop" ? 1 : 0}>Shop 🛒</StyledLink>
-            <StyledLink to="/ChatBot" active={location.pathname === "/ChatBot" ? 1 : 0}>ChatBot🤖</StyledLink>
-
-            {/* More dropdown */}
+            {/* ✅ More dropdown */}
             <Dropdown>
               <DropButton onClick={toggleDropdown}>More ▾</DropButton>
               <DropContent dark={darkMode} open={open} onMouseLeave={() => setOpen(false)}>
-                <StyledLink to="/identify">Identify🌱</StyledLink>
+                <StyledLink to="/identify">Identify 🌱</StyledLink>
                 <StyledLink to="/disease-detect">Disease 🦠 </StyledLink>
                 <StyledLink to="/forum">Forum 🌿</StyledLink>
                 <StyledLink to="/ClimateAdvice">Climate 🌡️☀️</StyledLink>
                 <StyledLink to="/about">About</StyledLink>
-                <StyledLink to="/contact ">Contact📞</StyledLink>
+                <StyledLink to="/contact">Contact 📞</StyledLink>
                 <StyledLink to="/my-orders">My Orders</StyledLink>
               </DropContent>
             </Dropdown>
