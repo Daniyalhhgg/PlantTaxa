@@ -9,14 +9,8 @@ const styles = {
     padding: "12px 5px",
     textAlign: "center",
   },
-  heroTitle: {
-    fontSize: "40px",
-    marginBottom: "10px",
-  },
-  heroText: {
-    fontSize: "18px",
-    marginBottom: "25px",
-  },
+  heroTitle: { fontSize: "40px", marginBottom: "10px" },
+  heroText: { fontSize: "18px", marginBottom: "25px" },
   heroButton: {
     padding: "12px 28px",
     background: "white",
@@ -27,9 +21,7 @@ const styles = {
     fontSize: "16px",
     fontWeight: "bold",
   },
-  containerFont: {
-    fontFamily: "Poppins, sans-serif",
-  },
+  containerFont: { fontFamily: "Poppins, sans-serif" },
   searchInput: {
     padding: "12px 16px",
     width: "90%",
@@ -66,12 +58,7 @@ const styles = {
     transition: "transform 0.3s ease, box-shadow 0.3s ease",
     cursor: "pointer",
   },
-  priceText: {
-    margin: "8px 0",
-    fontSize: "17px",
-    color: "#27ae60",
-    fontWeight: "bold",
-  },
+  priceText: { margin: "8px 0", fontSize: "17px", color: "#27ae60", fontWeight: "bold" },
   actionButton: {
     padding: "8px 16px",
     borderRadius: "25px",
@@ -81,14 +68,8 @@ const styles = {
     border: "none",
     transition: "opacity 0.3s ease",
   },
-  buyButton: {
-    background: "linear-gradient(135deg, #2ecc71, #27ae60)",
-    color: "white",
-  },
-  viewButton: {
-    background: "#f4f6f7",
-    border: "1px solid #ddd",
-  },
+  buyButton: { background: "linear-gradient(135deg, #2ecc71, #27ae60)", color: "white" },
+  viewButton: { background: "#f4f6f7", border: "1px solid #ddd" },
   favoriteStar: (isFav) => ({
     cursor: "pointer",
     fontSize: "26px",
@@ -105,13 +86,13 @@ const PlantShop = () => {
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [filter, setFilter] = useState("All");
   const [favorites, setFavorites] = useState(() => {
-    // Load favorites from localStorage initially
     const saved = localStorage.getItem("favorites");
     return saved ? JSON.parse(saved) : [];
   });
 
   const navigate = useNavigate();
   const plantSectionRef = useRef(null);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
   const fetchPlants = useCallback(async () => {
     setLoading(true);
@@ -131,18 +112,11 @@ const PlantShop = () => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    fetchPlants();
-  }, [fetchPlants]);
+  useEffect(() => { fetchPlants(); }, [fetchPlants]);
 
-  useEffect(() => {
-    // Save favorites to localStorage whenever it changes
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites]);
+  useEffect(() => { localStorage.setItem("favorites", JSON.stringify(favorites)); }, [favorites]);
 
-  const handleBuy = (plantId) => {
-    navigate(`/checkout/${plantId}`);
-  };
+  const handleBuy = (plantId) => { navigate(`/checkout/${plantId}`); };
 
   const toggleFavorite = useCallback(
     (plant) => {
@@ -168,34 +142,24 @@ const PlantShop = () => {
   }, [plants, searchTerm, filter, favorites]);
 
   const scrollToPlants = () => {
-    if (plantSectionRef.current) {
-      plantSectionRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    if (plantSectionRef.current) plantSectionRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   if (loading) return <p style={{ padding: "20px" }}>🌿 Loading plants...</p>;
-  if (error)
-    return (
-      <div style={{ padding: "20px", color: "red", textAlign: "center" }}>
-        ❌ Error: {error}
-        <br />
-        <button onClick={fetchPlants} style={{ marginTop: 12, cursor: "pointer" }}>
-          🔄 Retry
-        </button>
-      </div>
-    );
+  if (error) return (
+    <div style={{ padding: "20px", color: "red", textAlign: "center" }}>
+      ❌ Error: {error}<br/>
+      <button onClick={fetchPlants} style={{ marginTop: 12, cursor: "pointer" }}>🔄 Retry</button>
+    </div>
+  );
 
   return (
     <div style={styles.containerFont}>
-      {/* Hero Section */}
+      {/* Hero */}
       <div style={styles.heroSection}>
         <h1 style={styles.heroTitle}>🌱 Bring Nature Home</h1>
-        <p style={styles.heroText}>
-          Discover beautiful plants to brighten your space & purify the air.
-        </p>
-        <button onClick={scrollToPlants} style={styles.heroButton}>
-          Shop Now
-        </button>
+        <p style={styles.heroText}>Discover beautiful plants to brighten your space & purify the air.</p>
+        <button onClick={scrollToPlants} style={styles.heroButton}>Shop Now</button>
       </div>
 
       {/* Search & Filters */}
@@ -222,7 +186,7 @@ const PlantShop = () => {
         </div>
       </div>
 
-      {/* Plant Cards Section */}
+      {/* Plants Grid */}
       <div ref={plantSectionRef} style={styles.plantGrid}>
         {(filter === "Favorites" ? favorites : filteredPlants).length === 0 ? (
           <p style={{ textAlign: "center", fontSize: "18px", color: "#888" }}>No plants found.</p>
@@ -230,88 +194,48 @@ const PlantShop = () => {
           (filter === "Favorites" ? favorites : filteredPlants).map((plant) => {
             const isFav = favorites.some((fav) => fav._id === plant._id);
             return (
-              <div
-                key={plant._id}
-                style={styles.plantCard}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-8px) scale(1.02)";
-                  e.currentTarget.style.boxShadow = "0 12px 28px rgba(0,0,0,0.2)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0) scale(1)";
-                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.12)";
-                }}
+              <div key={plant._id} style={styles.plantCard}
+                onMouseEnter={e => { e.currentTarget.style.transform="translateY(-8px) scale(1.02)"; e.currentTarget.style.boxShadow="0 12px 28px rgba(0,0,0,0.2)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform="translateY(0) scale(1)"; e.currentTarget.style.boxShadow="0 8px 20px rgba(0,0,0,0.12)"; }}
               >
                 {plant.imageUrl && (
                   <img
-                    src={`http://localhost:5000${plant.imageUrl}`}
+                    src={`${API_BASE_URL}${plant.imageUrl}`}
                     alt={plant.name}
-                    style={{
-                      width: "100%",
-                      height: "220px",
-                      objectFit: "cover",
-                      borderRadius: "14px",
-                      marginBottom: "14px",
-                    }}
+                    style={{ width:"100%", height:"220px", objectFit:"cover", borderRadius:"14px", marginBottom:"14px" }}
                     onClick={() => setSelectedPlant(plant)}
-                    onError={(e) => (e.target.src = "/fallback.png")}
+                    onError={e => e.target.src="/fallback.png"}
                   />
                 )}
-                <h3 style={{ margin: "10px 0", fontSize: "20px", fontWeight: "600", color: "#2c3e50" }}>
-                  {plant.name}
-                </h3>
-                {plant.category && (
-                  <p
-                    style={{
-                      margin: "4px 0",
-                      fontSize: "14px",
-                      color: "#7f8c8d",
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {plant.category}
-                  </p>
-                )}
+                <h3 style={{ margin:"10px 0", fontSize:"20px", fontWeight:"600", color:"#2c3e50" }}>{plant.name}</h3>
+                {plant.category && <p style={{ margin:"4px 0", fontSize:"14px", color:"#7f8c8d", fontStyle:"italic" }}>{plant.category}</p>}
                 <p style={styles.priceText}>Rs. {plant.price}</p>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "12px",
-                    alignItems: "center",
-                    marginTop: "10px",
-                  }}
-                >
+                <div style={{ display:"flex", justifyContent:"center", gap:"12px", alignItems:"center", marginTop:"10px" }}>
                   <button
                     onClick={() => handleBuy(plant._id)}
                     style={{ ...styles.actionButton, ...styles.buyButton }}
-                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseEnter={e => e.currentTarget.style.opacity="0.85"}
+                    onMouseLeave={e => e.currentTarget.style.opacity="1"}
                     aria-label={`Buy ${plant.name}`}
-                  >
-                    🛒 Buy
-                  </button>
+                  >🛒 Buy</button>
+
                   <button
                     onClick={() => setSelectedPlant(plant)}
                     style={{ ...styles.actionButton, ...styles.viewButton }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#ecf0f1")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "#f4f6f7")}
+                    onMouseEnter={e => e.currentTarget.style.background="#ecf0f1"}
+                    onMouseLeave={e => e.currentTarget.style.background="#f4f6f7"}
                     aria-label={`View details of ${plant.name}`}
-                  >
-                    👁 View
-                  </button>
+                  >👁 View</button>
 
                   <span
                     onClick={() => toggleFavorite(plant)}
                     style={styles.favoriteStar(isFav)}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    onMouseEnter={e => e.currentTarget.style.transform="scale(1.2)"}
+                    onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") toggleFavorite(plant);
-                    }}
+                    onKeyDown={e => { if(e.key==="Enter" || e.key===" ") toggleFavorite(plant); }}
                     aria-pressed={isFav}
                     aria-label={isFav ? `Remove ${plant.name} from favorites` : `Add ${plant.name} to favorites`}
                   >
@@ -328,90 +252,30 @@ const PlantShop = () => {
       {selectedPlant && (
         <div
           onClick={() => setSelectedPlant(null)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.7)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-            padding: "10px",
-            overflowY: "auto",
-          }}
+          style={{ position:"fixed", top:0, left:0, width:"100vw", height:"100vh", background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:"10px", overflowY:"auto" }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "white",
-              padding: "20px",
-              borderRadius: "15px",
-              maxWidth: "700px",
-              width: "100%",
-              textAlign: "center",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-              animation: "fadeIn 0.3s ease-in-out",
-            }}
+            onClick={e => e.stopPropagation()}
+            style={{ background:"white", padding:"20px", borderRadius:"15px", maxWidth:"700px", width:"100%", textAlign:"center", boxShadow:"0 10px 25px rgba(0,0,0,0.2)", animation:"fadeIn 0.3s ease-in-out" }}
           >
             <img
-              src={`http://localhost:5000${selectedPlant.imageUrl}`}
+              src={`${API_BASE_URL}${selectedPlant.imageUrl}`}
               alt={selectedPlant.name}
-              style={{
-                width: "100%",
-                maxHeight: "350px",
-                objectFit: "contain",
-                borderRadius: "10px",
-                marginBottom: "15px",
-              }}
-              onError={(e) => (e.target.src = "/fallback.png")}
+              style={{ width:"100%", maxHeight:"350px", objectFit:"contain", borderRadius:"10px", marginBottom:"15px" }}
+              onError={e => e.target.src="/fallback.png"}
             />
-            <h2
-              id="modal-title"
-              style={{ fontSize: "22px", marginBottom: "8px", color: "#2c3e50" }}
-            >
-              {selectedPlant.name}
-            </h2>
-            {selectedPlant.category && (
-              <p
-                style={{
-                  fontSize: "14px",
-                  color: "#888",
-                  marginBottom: "8px",
-                  fontStyle: "italic",
-                }}
-              >
-                {selectedPlant.category}
-              </p>
-            )}
-            <p style={{ fontSize: "18px", color: "#27ae60", marginBottom: "12px" }}>
-              <strong>Rs. {selectedPlant.price}</strong>
-            </p>
-            <p
-              style={{ fontSize: "15px", color: "#444", marginBottom: "20px", lineHeight: "1.6" }}
-            >
-              {selectedPlant.description || "No description available."}
-            </p>
+            <h2 id="modal-title" style={{ fontSize:"22px", marginBottom:"8px", color:"#2c3e50" }}>{selectedPlant.name}</h2>
+            {selectedPlant.category && <p style={{ fontSize:"14px", color:"#888", marginBottom:"8px", fontStyle:"italic" }}>{selectedPlant.category}</p>}
+            <p style={{ fontSize:"18px", color:"#27ae60", marginBottom:"12px" }}><strong>Rs. {selectedPlant.price}</strong></p>
+            <p style={{ fontSize:"15px", color:"#444", marginBottom:"20px", lineHeight:"1.6" }}>{selectedPlant.description || "No description available."}</p>
             <button
               onClick={() => setSelectedPlant(null)}
-              style={{
-                padding: "10px 20px",
-                border: "none",
-                borderRadius: "25px",
-                background: "#e74c3c",
-                color: "white",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
+              style={{ padding:"10px 20px", border:"none", borderRadius:"25px", background:"#e74c3c", color:"white", cursor:"pointer", fontWeight:"bold" }}
               aria-label="Close plant details"
-            >
-              ❌ Close
-            </button>
+            >❌ Close</button>
           </div>
         </div>
       )}

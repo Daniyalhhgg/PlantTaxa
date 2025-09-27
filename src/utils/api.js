@@ -3,11 +3,10 @@ import axios from "axios";
 // ----------------------
 // 🔗 Base URL
 // ----------------------
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
 const API = axios.create({
-  baseURL:
-    process.env.NODE_ENV === "production"
-      ? "https://upbeat-rejoicing-production.up.railway.app/api"
-      : "http://localhost:5000/api",
+  baseURL: `${API_BASE_URL}/api`,
 });
 
 // 🔑 Automatically attach JWT token (agar login ke baad localStorage me save hai)
@@ -48,7 +47,7 @@ export const predictDisease = async (imageFile) => {
     const formData = new FormData();
     formData.append("image", imageFile);
     const { data } = await API.post("/disease/upload", formData);
-    return data; // e.g. { result: "Tomato___Late_blight" }
+    return data;
   } catch (err) {
     return { error: err.response?.data?.error || err.message };
   }
@@ -78,39 +77,35 @@ export const getPlantById = async (id) => {
 // ----------------------
 // ✅ Orders
 // ----------------------
-
-// Quick order – single quantity, default COD
 export const buyPlant = async (plantId) => {
   try {
     const { data } = await API.post("/orders", { plantId });
-    return data; // { msg: "Order placed successfully" }
+    return data;
   } catch (err) {
     return { error: err.response?.data?.error || err.message };
   }
 };
 
-// Checkout page – full order with quantity, address, etc.
 export const placeOrder = async (orderData) => {
   try {
     const { data } = await API.post("/orders", orderData);
-    return data; // { msg: "Order placed successfully" }
+    return data;
   } catch (err) {
     return { error: err.response?.data?.error || err.message };
   }
 };
 
-// 🔑 Get logged-in user's orders
 export const getMyOrders = async () => {
   try {
     const { data } = await API.get("/orders/my");
-    return data; // array of orders
+    return data;
   } catch (err) {
     return { error: err.response?.data?.error || err.message };
   }
 };
 
 // ----------------------
-// ✅ Attach helpers to default export for API.getXYZ() usage
+// 🔑 Attach helpers to default export
 // ----------------------
 API.registerUser = registerUser;
 API.loginUser = loginUser;
