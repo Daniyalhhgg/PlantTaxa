@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { isAuthenticated, removeToken } from "../utils/auth";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaUser } from "react-icons/fa";   // ✅ user icon
+import { FaUser, FaBars, FaTimes } from "react-icons/fa";   // ✅ icons
 
 // ===== Styled Components =====
 const Nav = styled.nav`
@@ -12,11 +12,10 @@ const Nav = styled.nav`
       ? "linear-gradient(90deg, #0f2027, #203a43, #2c5364)"
       : "linear-gradient(90deg, #4caf50, #81c784)"};
   color: ${({ dark }) => (dark ? "#f1f1f1" : "#fff")};
-  padding: 12px 32px;
+  padding: 12px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   position: sticky;
   top: 0;
@@ -27,40 +26,30 @@ const Nav = styled.nav`
 const LogoGroup = styled(Link)`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   text-decoration: none;
   color: inherit;
 `;
 
 const LogoImage = styled.img`
-  height: 50px;
-  width: 50px;
+  height: 45px;
+  width: 45px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.6);
-  transition: all 0.3s;
-  &:hover {
-    transform: rotate(10deg) scale(1.05);
-    border-color: #fff;
-  }
 `;
 
 const LogoText = styled.span`
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  font-family: 'Segoe UI', sans-serif;
-  letter-spacing: 1px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 `;
 
 const NavLinks = styled.div`
   display: flex;
   gap: 16px;
   align-items: center;
+
   @media(max-width: 768px) {
-    width: 100%;
-    justify-content: space-around;
-    margin-top: 8px;
+    display: none; /* ✅ hide normal links on mobile */
   }
 `;
 
@@ -69,25 +58,8 @@ const StyledLink = styled(Link)`
   font-weight: 500;
   text-decoration: none;
   font-size: 1rem;
-  position: relative;
   padding: 6px 8px;
   transition: all 0.3s;
-
-  ${({ active }) =>
-    active &&
-    `
-    font-weight: 700;
-    &:after {
-      content: "";
-      position: absolute;
-      bottom: -2px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: #fff;
-      border-radius: 2px;
-    }
-  `};
 
   &:hover {
     color: #d0ffd0;
@@ -95,16 +67,15 @@ const StyledLink = styled(Link)`
   }
 `;
 
-/* ✅ Profile link: icon above text */
 const ProfileLink = styled(StyledLink)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  font-size: 0.9rem;
+  gap: 3px;
+  font-size: 0.85rem;
 
   svg {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 `;
 
@@ -112,78 +83,53 @@ const Button = styled.button`
   background: rgba(255,255,255,0.2);
   color: ${({ dark }) => (dark ? "#fff" : "#1b5e20")};
   border: 1px solid rgba(255,255,255,0.4);
-  padding: 6px 16px;
-  border-radius: 30px;
+  padding: 6px 14px;
+  border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 
   &:hover {
     background: ${({ dark }) => (dark ? "rgba(255,255,255,0.3)" : "#e0f2f1")};
-    color: ${({ dark }) => (dark ? "#fff" : "#1b5e20")};
     transform: scale(1.05);
   }
 `;
 
-// Modern Toggle
-const ToggleWrapper = styled.div`
-  width: 50px;
-  height: 26px;
-  border-radius: 50px;
-  background: ${({ dark }) => (dark ? "#333" : "#ddd")};
-  display: flex;
-  align-items: center;
-  padding: 3px;
+// ✅ Hamburger
+const Hamburger = styled.div`
+  display: none;
+  font-size: 1.6rem;
   cursor: pointer;
-  transition: background 0.3s ease;
-`;
-
-const ToggleCircle = styled(motion.div)`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: ${({ dark }) => (dark ? "#f1c40f" : "#2c3e50")};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-`;
-
-// Dropdown
-const Dropdown = styled.div`
-  position: relative;
-`;
-
-const DropButton = styled.div`
-  cursor: pointer;
-  font-weight: 500;
-  padding: 6px 8px;
-  &:hover {
-    color: #d0ffd0;
-    transform: scale(1.05);
+  @media(max-width: 768px) {
+    display: block;
   }
 `;
 
-const DropContent = styled.div`
-  position: absolute;
-  top: 32px;
-  right: 0;
+// ✅ Mobile Drawer
+const MobileMenu = styled.div`
+  position: fixed;
+  top: 0;
+  right: ${({ open }) => (open ? "0" : "-100%")};
+  width: 70%;
+  height: 100%;
   background: ${({ dark }) => (dark ? "#2c3e50" : "#4caf50")};
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  display: ${({ open }) => (open ? "flex" : "none")};
+  color: #fff;
+  display: flex;
   flex-direction: column;
-  min-width: 160px;
-  z-index: 999;
+  padding: 20px;
+  transition: right 0.3s ease;
+  z-index: 1200;
 
-  ${StyledLink} {
-    padding: 8px 12px;
-    &:hover {
-      background: rgba(255,255,255,0.1);
-      transform: none;
-    }
+  a, button {
+    margin: 12px 0;
   }
+`;
+
+const CloseBtn = styled.div`
+  align-self: flex-end;
+  font-size: 1.6rem;
+  cursor: pointer;
 `;
 
 // ===== Component =====
@@ -208,64 +154,66 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const toggleDropdown = () => setOpen(!open);
-
   return (
-    <Nav dark={darkMode}>
-      <LogoGroup to="/">
-        <LogoImage src="/logo1.png" alt="PlantTaxa Logo" />
-        <LogoText>PlantTaxa</LogoText>
-      </LogoGroup>
+    <>
+      <Nav dark={darkMode}>
+        <LogoGroup to="/">
+          <LogoImage src="/logo1.png" alt="PlantTaxa Logo" />
+          <LogoText>PlantTaxa</LogoText>
+        </LogoGroup>
 
-      <NavLinks>
+        {/* Desktop Links */}
+        <NavLinks>
+          {isAuthenticated() ? (
+            <>
+              <StyledLink to="/dashboard">Dashboard 🏠</StyledLink>
+              <StyledLink to="/PlantShop">Shop 🛒</StyledLink>
+              <StyledLink to="/ChatBot">ChatBot 🤖</StyledLink>
+              <ProfileLink to="/profile"><FaUser /> Profile</ProfileLink>
+              <Button dark={darkMode} onClick={handleLogout}>Logout</Button>
+            </>
+          ) : (
+            <>
+              <StyledLink to="/login">Login</StyledLink>
+              <StyledLink to="/register">Register</StyledLink>
+            </>
+          )}
+          <Button onClick={toggleDarkMode}>{darkMode ? "☀️" : "🌙"}</Button>
+        </NavLinks>
+
+        {/* Mobile Hamburger */}
+        <Hamburger onClick={() => setOpen(true)}>
+          <FaBars />
+        </Hamburger>
+      </Nav>
+
+      {/* Mobile Drawer */}
+      <MobileMenu dark={darkMode} open={open}>
+        <CloseBtn onClick={() => setOpen(false)}><FaTimes /></CloseBtn>
         {isAuthenticated() ? (
           <>
-            {/* ✅ Only 3 main buttons outside */}
-            <StyledLink to="/dashboard" active={location.pathname === "/dashboard" ? 1 : 0}>Dashboard 🏠</StyledLink>
-            <StyledLink to="/PlantShop" active={location.pathname === "/PlantShop" ? 1 : 0}>Shop 🛒</StyledLink>
-            <StyledLink to="/ChatBot" active={location.pathname === "/ChatBot" ? 1 : 0}>ChatBot 🤖</StyledLink>
-
-            {/* ✅ Profile icon (always visible) */}
-            <ProfileLink to="/profile" active={location.pathname === "/profile" ? 1 : 0}>
-              <FaUser />
-              Profile
-            </ProfileLink>
-
-            {/* ✅ More dropdown */}
-            <Dropdown>
-              <DropButton onClick={toggleDropdown}>More ▾</DropButton>
-              <DropContent dark={darkMode} open={open} onMouseLeave={() => setOpen(false)}>
-                <StyledLink to="/identify">Identify 🌱</StyledLink>
-                <StyledLink to="/disease-detect">Disease 🦠 </StyledLink>
-                <StyledLink to="/forum">Forum 🌿</StyledLink>
-                <StyledLink to="/ClimateAdvice">Climate 🌡️☀️</StyledLink>
-                <StyledLink to="/about">About</StyledLink>
-                <StyledLink to="/contact">Contact 📞</StyledLink>
-                <StyledLink to="/my-orders">My Orders</StyledLink>
-              </DropContent>
-            </Dropdown>
-
+            <StyledLink to="/dashboard" onClick={() => setOpen(false)}>Dashboard 🏠</StyledLink>
+            <StyledLink to="/PlantShop" onClick={() => setOpen(false)}>Shop 🛒</StyledLink>
+            <StyledLink to="/ChatBot" onClick={() => setOpen(false)}>ChatBot 🤖</StyledLink>
+            <StyledLink to="/identify" onClick={() => setOpen(false)}>Identify 🌱</StyledLink>
+            <StyledLink to="/disease-detect" onClick={() => setOpen(false)}>Disease 🦠</StyledLink>
+            <StyledLink to="/forum" onClick={() => setOpen(false)}>Forum 🌿</StyledLink>
+            <StyledLink to="/ClimateAdvice" onClick={() => setOpen(false)}>Climate 🌡️</StyledLink>
+            <StyledLink to="/about" onClick={() => setOpen(false)}>About</StyledLink>
+            <StyledLink to="/contact" onClick={() => setOpen(false)}>Contact 📞</StyledLink>
+            <StyledLink to="/my-orders" onClick={() => setOpen(false)}>My Orders</StyledLink>
+            <ProfileLink to="/profile" onClick={() => setOpen(false)}><FaUser /> Profile</ProfileLink>
             <Button dark={darkMode} onClick={handleLogout}>Logout</Button>
           </>
         ) : (
           <>
-            <StyledLink to="/login" active={location.pathname === "/login" ? 1 : 0}>Login</StyledLink>
-            <StyledLink to="/register" active={location.pathname === "/register" ? 1 : 0}>Register</StyledLink>
+            <StyledLink to="/login" onClick={() => setOpen(false)}>Login</StyledLink>
+            <StyledLink to="/register" onClick={() => setOpen(false)}>Register</StyledLink>
           </>
         )}
-
-        {/* Dark mode toggle */}
-        <ToggleWrapper dark={darkMode} onClick={toggleDarkMode}>
-          <ToggleCircle
-            dark={darkMode}
-            animate={{ x: darkMode ? 24 : 0 }}
-            transition={{ type: "spring", stiffness: 200, damping: 15 }}
-          >
-            {darkMode ? "☀️" : "🌙"}
-          </ToggleCircle>
-        </ToggleWrapper>
-      </NavLinks>
-    </Nav>
+        <Button onClick={toggleDarkMode}>{darkMode ? "☀️ Light" : "🌙 Dark"}</Button>
+      </MobileMenu>
+    </>
   );
 };
 
