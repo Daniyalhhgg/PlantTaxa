@@ -9,7 +9,7 @@ const API = axios.create({
   baseURL: `${API_BASE_URL}/api`,
 });
 
-// 🔑 Automatically attach JWT token
+// 🔑 Automatically attach JWT token (agar login ke baad localStorage me save hai)
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -54,7 +54,7 @@ export const predictDisease = async (imageFile) => {
 };
 
 // ----------------------
-// ✅ Plant Shop (User + Admin)
+// ✅ Plant Shop
 // ----------------------
 export const getPlants = async () => {
   try {
@@ -68,48 +68,6 @@ export const getPlants = async () => {
 export const getPlantById = async (id) => {
   try {
     const { data } = await API.get(`/plants/${id}`);
-    return data;
-  } catch (err) {
-    return { error: err.response?.data?.error || err.message };
-  }
-};
-
-// ✅ Admin: Add Plant (with image upload)
-export const addPlant = async (plantData) => {
-  try {
-    const formData = new FormData();
-    for (const key in plantData) {
-      formData.append(key, plantData[key]);
-    }
-    const { data } = await API.post("/plants", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return data;
-  } catch (err) {
-    return { error: err.response?.data?.error || err.message };
-  }
-};
-
-// ✅ Admin: Update Plant
-export const updatePlant = async (id, plantData) => {
-  try {
-    const formData = new FormData();
-    for (const key in plantData) {
-      formData.append(key, plantData[key]);
-    }
-    const { data } = await API.put(`/plants/${id}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return data;
-  } catch (err) {
-    return { error: err.response?.data?.error || err.message };
-  }
-};
-
-// ✅ Admin: Delete Plant
-export const deletePlant = async (id) => {
-  try {
-    const { data } = await API.delete(`/plants/${id}`);
     return data;
   } catch (err) {
     return { error: err.response?.data?.error || err.message };
@@ -154,9 +112,6 @@ API.loginUser = loginUser;
 API.predictDisease = predictDisease;
 API.getPlants = getPlants;
 API.getPlantById = getPlantById;
-API.addPlant = addPlant;
-API.updatePlant = updatePlant;
-API.deletePlant = deletePlant;
 API.buyPlant = buyPlant;
 API.placeOrder = placeOrder;
 API.getMyOrders = getMyOrders;
