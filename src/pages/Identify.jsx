@@ -1,3 +1,4 @@
+// ==== pages/Identify.js ====
 import { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { FiUploadCloud } from "react-icons/fi";
@@ -15,20 +16,23 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Poppins", sans-serif;
 
   &::before {
     content: "";
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 60, 30, 0.8);
+    inset: 0;
+    background: rgba(0, 60, 30, 0.85);
     z-index: 0;
   }
 
   > * {
     position: relative;
     z-index: 1;
+  }
+
+  @media (max-width: 768px) {
+    padding: 40px 16px;
   }
 `;
 
@@ -39,22 +43,34 @@ const Card = styled.div`
   max-width: 600px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   animation: ${fadeIn} 0.6s ease;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   color: white;
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+  }
 `;
 
 const Title = styled.h2`
   font-size: 2rem;
   color: #c8ffc8;
   margin-bottom: 10px;
+
+  @media (max-width: 480px) {
+    font-size: 1.6rem;
+  }
 `;
 
 const Description = styled.p`
   color: #e0f7e9;
   font-size: 1rem;
   margin-bottom: 30px;
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const UploadArea = styled.div`
@@ -69,6 +85,10 @@ const UploadArea = styled.div`
   &:hover {
     background-color: rgba(255, 255, 255, 0.25);
   }
+
+  @media (max-width: 480px) {
+    padding: 30px 20px;
+  }
 `;
 
 const UploadLabel = styled.label`
@@ -77,10 +97,27 @@ const UploadLabel = styled.label`
   align-items: center;
   color: #c8ffc8;
   font-weight: 600;
+  gap: 8px;
+  text-align: center;
+
+  svg {
+    font-size: 2rem;
+  }
+
+  span {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    span {
+      font-size: 0.9rem;
+    }
+  }
 `;
 
 const ImagePreview = styled.img`
   max-width: 100%;
+  width: 100%;
   border-radius: 12px;
   margin-top: 20px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
@@ -104,6 +141,12 @@ const IdentifyButton = styled.button`
 
   &:hover {
     background-color: #2e7d32;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 10px 20px;
   }
 `;
 
@@ -151,9 +194,7 @@ const Identify = () => {
           {image && <ImagePreview src={image} alt="Uploaded plant" />}
         </UploadArea>
 
-        <IdentifyButton onClick={handleIdentify}>
-          Identify Plant
-        </IdentifyButton>
+        <IdentifyButton onClick={handleIdentify}>Identify Plant</IdentifyButton>
       </Card>
     </Container>
   );

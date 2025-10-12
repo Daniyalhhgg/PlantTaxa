@@ -3,79 +3,190 @@ import { useNavigate } from "react-router-dom";
 import { getPlants } from "../utils/api";
 
 const styles = {
+  container: {
+    fontFamily: "Poppins, sans-serif",
+    background: "#f7f9f9",
+    color: "#2c3e50",
+  },
   heroSection: {
     background: "linear-gradient(135deg, #2ecc71, #27ae60)",
     color: "white",
-    padding: "12px 5px",
     textAlign: "center",
+    padding: "70px 20px",
+    borderBottomLeftRadius: "40px",
+    borderBottomRightRadius: "40px",
   },
-  heroTitle: { fontSize: "40px", marginBottom: "10px" },
-  heroText: { fontSize: "18px", marginBottom: "25px" },
+  heroTitle: {
+    fontSize: "2.5rem",
+    fontWeight: "700",
+    marginBottom: "10px",
+  },
+  heroText: {
+    fontSize: "1.1rem",
+    opacity: 0.9,
+    maxWidth: "600px",
+    margin: "0 auto 30px",
+  },
   heroButton: {
-    padding: "12px 28px",
-    background: "white",
+    background: "#fff",
     color: "#27ae60",
     border: "none",
     borderRadius: "30px",
+    padding: "14px 32px",
+    fontSize: "1rem",
+    fontWeight: "600",
     cursor: "pointer",
-    fontSize: "16px",
-    fontWeight: "bold",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
   },
-  containerFont: { fontFamily: "Poppins, sans-serif" },
+  searchContainer: {
+    textAlign: "center",
+    margin: "40px 0 20px",
+    padding: "0 20px",
+  },
   searchInput: {
-    padding: "12px 16px",
+    padding: "12px 18px",
     width: "90%",
-    maxWidth: "400px",
-    fontSize: "16px",
-    borderRadius: "25px",
+    maxWidth: "420px",
+    borderRadius: "30px",
     border: "1px solid #ccc",
-    marginBottom: "15px",
     outline: "none",
+    fontSize: "1rem",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+  },
+  filters: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: "8px",
+    marginTop: "15px",
   },
   filterButton: (active) => ({
-    margin: "5px",
-    padding: "8px 16px",
-    borderRadius: "20px",
-    border: active ? "2px solid #27ae60" : "1px solid #ccc",
-    background: active ? "#eafaf1" : "white",
-    cursor: "pointer",
+    padding: "8px 18px",
+    borderRadius: "25px",
+    fontSize: "0.9rem",
     fontWeight: "600",
+    border: active ? "2px solid #27ae60" : "1px solid #ddd",
+    background: active ? "#eafaf1" : "white",
+    color: active ? "#27ae60" : "#2c3e50",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
   }),
   plantGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "30px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+    gap: "20px",
     maxWidth: "1300px",
     margin: "0 auto 60px",
-    padding: "0 20px",
+    padding: "0 15px",
   },
   plantCard: {
-    background: "#fff",
-    borderRadius: "18px",
-    padding: "18px",
+    background: "white",
+    borderRadius: "16px",
+    padding: "14px",
     textAlign: "center",
-    boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
-    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    boxShadow: "0 5px 15px rgba(0,0,0,0.08)",
+    transition: "transform 0.25s ease, box-shadow 0.25s ease",
     cursor: "pointer",
   },
-  priceText: { margin: "8px 0", fontSize: "17px", color: "#27ae60", fontWeight: "bold" },
+  image: {
+    width: "100%",
+    height: "180px",
+    objectFit: "cover",
+    borderRadius: "12px",
+    marginBottom: "10px",
+    transition: "transform 0.3s ease",
+  },
+  priceText: {
+    margin: "8px 0",
+    fontSize: "16px",
+    color: "#27ae60",
+    fontWeight: "600",
+  },
   actionButton: {
-    padding: "8px 16px",
+    padding: "7px 14px",
     borderRadius: "25px",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "bold",
     cursor: "pointer",
     border: "none",
-    transition: "opacity 0.3s ease",
   },
-  buyButton: { background: "linear-gradient(135deg, #2ecc71, #27ae60)", color: "white" },
-  viewButton: { background: "#f4f6f7", border: "1px solid #ddd" },
+  buyButton: {
+    background: "linear-gradient(135deg, #2ecc71, #27ae60)",
+    color: "white",
+  },
+  viewButton: {
+    background: "#f4f6f7",
+    border: "1px solid #ddd",
+  },
   favoriteStar: (isFav) => ({
     cursor: "pointer",
-    fontSize: "26px",
+    fontSize: "22px",
     color: isFav ? "gold" : "#ccc",
-    transition: "color 0.3s ease, transform 0.2s",
+    transition: "color 0.3s",
   }),
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    background: "rgba(0,0,0,0.7)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+    padding: "10px",
+  },
+  modalContent: {
+    background: "white",
+    padding: "25px",
+    borderRadius: "20px",
+    maxWidth: "700px",
+    width: "100%",
+    textAlign: "center",
+  },
+  closeButton: {
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "25px",
+    background: "#e74c3c",
+    color: "white",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+};
+
+// 🌿 Inject responsive CSS
+const injectResponsiveCSS = () => {
+  const styleTag = document.createElement("style");
+  styleTag.innerHTML = `
+    @media (max-width: 768px) {
+      #plantGrid {
+        grid-template-columns: repeat(2, 1fr) !important; /* 📱 2 per row */
+        gap: 14px !important;
+      }
+      .plant-card img {
+        height: 140px !important;
+      }
+      .plant-card {
+        padding: 10px !important;
+      }
+    }
+    @media (min-width: 769px) {
+      #plantGrid {
+        grid-template-columns: repeat(4, 1fr) !important; /* 💻 4 per row */
+      }
+    }
+    .plant-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .plant-card img:hover {
+      transform: scale(1.05);
+    }
+  `;
+  document.head.appendChild(styleTag);
 };
 
 const PlantShop = () => {
@@ -100,34 +211,36 @@ const PlantShop = () => {
     try {
       const data = await getPlants();
       if (!data || data.error) {
-        setError(data?.error || "Could not load plant list. Please try again later.");
+        setError(data?.error || "Could not load plant list.");
         setPlants([]);
       } else {
         setPlants(data);
       }
-    } catch (err) {
-      setError("Network error. Please check your connection and try again.");
+    } catch {
+      setError("Network error. Please try again.");
       setPlants([]);
     }
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchPlants(); }, [fetchPlants]);
+  useEffect(() => {
+    fetchPlants();
+    injectResponsiveCSS();
+  }, [fetchPlants]);
 
-  useEffect(() => { localStorage.setItem("favorites", JSON.stringify(favorites)); }, [favorites]);
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
-  const handleBuy = (plantId) => { navigate(`/checkout/${plantId}`); };
+  const handleBuy = (plantId) => navigate(`/checkout/${plantId}`);
 
-  const toggleFavorite = useCallback(
-    (plant) => {
-      setFavorites((prev) =>
-        prev.find((fav) => fav._id === plant._id)
-          ? prev.filter((fav) => fav._id !== plant._id)
-          : [...prev, plant]
-      );
-    },
-    []
-  );
+  const toggleFavorite = (plant) => {
+    setFavorites((prev) =>
+      prev.find((fav) => fav._id === plant._id)
+        ? prev.filter((fav) => fav._id !== plant._id)
+        : [...prev, plant]
+    );
+  };
 
   const filteredPlants = useMemo(() => {
     return plants.filter((p) => {
@@ -141,44 +254,49 @@ const PlantShop = () => {
     });
   }, [plants, searchTerm, filter, favorites]);
 
-  const scrollToPlants = () => {
-    if (plantSectionRef.current) plantSectionRef.current.scrollIntoView({ behavior: "smooth" });
-  };
-
-  if (loading) return <p style={{ padding: "20px" }}>🌿 Loading plants...</p>;
-  if (error) return (
-    <div style={{ padding: "20px", color: "red", textAlign: "center" }}>
-      ❌ Error: {error}<br/>
-      <button onClick={fetchPlants} style={{ marginTop: 12, cursor: "pointer" }}>🔄 Retry</button>
-    </div>
-  );
+  if (loading) return <p style={{ textAlign: "center", padding: "20px" }}>🌿 Loading plants...</p>;
+  if (error)
+    return (
+      <div style={{ padding: "20px", color: "red", textAlign: "center" }}>
+        ❌ Error: {error}
+        <br />
+        <button onClick={fetchPlants} style={{ marginTop: 12, cursor: "pointer" }}>
+          🔄 Retry
+        </button>
+      </div>
+    );
 
   return (
-    <div style={styles.containerFont}>
-      {/* Hero */}
-      <div style={styles.heroSection}>
+    <div style={styles.container}>
+      {/* Hero Section */}
+      <section style={styles.heroSection}>
         <h1 style={styles.heroTitle}>🌱 Bring Nature Home</h1>
-        <p style={styles.heroText}>Discover beautiful plants to brighten your space & purify the air.</p>
-        <button onClick={scrollToPlants} style={styles.heroButton}>Shop Now</button>
-      </div>
+        <p style={styles.heroText}>
+          Discover beautiful plants to brighten your space & purify the air.
+        </p>
+        <button
+          style={styles.heroButton}
+          onClick={() => plantSectionRef.current?.scrollIntoView({ behavior: "smooth" })}
+        >
+          Shop Now
+        </button>
+      </section>
 
       {/* Search & Filters */}
-      <div style={{ textAlign: "center", margin: "30px 0" }}>
+      <div style={styles.searchContainer}>
         <input
           type="text"
           placeholder="🔍 Search plants..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={styles.searchInput}
-          aria-label="Search plants"
         />
-        <div style={{ marginTop: "10px" }}>
+        <div style={styles.filters}>
           {["All", "Indoor", "Outdoor", "Succulent", "Flowering", "Favorites"].map((cat) => (
             <button
               key={cat}
               onClick={() => setFilter(cat)}
               style={styles.filterButton(filter === cat)}
-              aria-pressed={filter === cat}
             >
               {cat}
             </button>
@@ -187,58 +305,34 @@ const PlantShop = () => {
       </div>
 
       {/* Plants Grid */}
-      <div ref={plantSectionRef} style={styles.plantGrid}>
+      <div ref={plantSectionRef} id="plantGrid" style={styles.plantGrid}>
         {(filter === "Favorites" ? favorites : filteredPlants).length === 0 ? (
           <p style={{ textAlign: "center", fontSize: "18px", color: "#888" }}>No plants found.</p>
         ) : (
           (filter === "Favorites" ? favorites : filteredPlants).map((plant) => {
             const isFav = favorites.some((fav) => fav._id === plant._id);
             return (
-              <div key={plant._id} style={styles.plantCard}
-                onMouseEnter={e => { e.currentTarget.style.transform="translateY(-8px) scale(1.02)"; e.currentTarget.style.boxShadow="0 12px 28px rgba(0,0,0,0.2)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform="translateY(0) scale(1)"; e.currentTarget.style.boxShadow="0 8px 20px rgba(0,0,0,0.12)"; }}
-              >
-                {plant.imageUrl && (
-                  <img
-                    src={`${API_BASE_URL}${plant.imageUrl}`}
-                    alt={plant.name}
-                    style={{ width:"100%", height:"220px", objectFit:"cover", borderRadius:"14px", marginBottom:"14px" }}
-                    onClick={() => setSelectedPlant(plant)}
-                    onError={e => e.target.src="/fallback.png"}
-                  />
-                )}
-                <h3 style={{ margin:"10px 0", fontSize:"20px", fontWeight:"600", color:"#2c3e50" }}>{plant.name}</h3>
-                {plant.category && <p style={{ margin:"4px 0", fontSize:"14px", color:"#7f8c8d", fontStyle:"italic" }}>{plant.category}</p>}
+              <div key={plant._id} className="plant-card" style={styles.plantCard}>
+                <img
+                  src={`${API_BASE_URL}${plant.imageUrl}`}
+                  alt={plant.name}
+                  style={styles.image}
+                  onError={(e) => (e.target.src = "/fallback.png")}
+                  onClick={() => setSelectedPlant(plant)}
+                />
+                <h3 style={{ fontSize: "16px", margin: "6px 0" }}>{plant.name}</h3>
                 <p style={styles.priceText}>Rs. {plant.price}</p>
-
-                <div style={{ display:"flex", justifyContent:"center", gap:"12px", alignItems:"center", marginTop:"10px" }}>
-                  <button
-                    onClick={() => handleBuy(plant._id)}
-                    style={{ ...styles.actionButton, ...styles.buyButton }}
-                    onMouseEnter={e => e.currentTarget.style.opacity="0.85"}
-                    onMouseLeave={e => e.currentTarget.style.opacity="1"}
-                    aria-label={`Buy ${plant.name}`}
-                  >🛒 Buy</button>
-
+                <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginTop: "8px" }}>
+                  <button onClick={() => handleBuy(plant._id)} style={{ ...styles.actionButton, ...styles.buyButton }}>
+                    🛒 Buy
+                  </button>
                   <button
                     onClick={() => setSelectedPlant(plant)}
                     style={{ ...styles.actionButton, ...styles.viewButton }}
-                    onMouseEnter={e => e.currentTarget.style.background="#ecf0f1"}
-                    onMouseLeave={e => e.currentTarget.style.background="#f4f6f7"}
-                    aria-label={`View details of ${plant.name}`}
-                  >👁 View</button>
-
-                  <span
-                    onClick={() => toggleFavorite(plant)}
-                    style={styles.favoriteStar(isFav)}
-                    onMouseEnter={e => e.currentTarget.style.transform="scale(1.2)"}
-                    onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={e => { if(e.key==="Enter" || e.key===" ") toggleFavorite(plant); }}
-                    aria-pressed={isFav}
-                    aria-label={isFav ? `Remove ${plant.name} from favorites` : `Add ${plant.name} to favorites`}
                   >
+                    👁 View
+                  </button>
+                  <span onClick={() => toggleFavorite(plant)} style={styles.favoriteStar(isFav)}>
                     {isFav ? "★" : "☆"}
                   </span>
                 </div>
@@ -250,32 +344,27 @@ const PlantShop = () => {
 
       {/* Modal */}
       {selectedPlant && (
-        <div
-          onClick={() => setSelectedPlant(null)}
-          style={{ position:"fixed", top:0, left:0, width:"100vw", height:"100vh", background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:"10px", overflowY:"auto" }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            style={{ background:"white", padding:"20px", borderRadius:"15px", maxWidth:"700px", width:"100%", textAlign:"center", boxShadow:"0 10px 25px rgba(0,0,0,0.2)", animation:"fadeIn 0.3s ease-in-out" }}
-          >
+        <div onClick={() => setSelectedPlant(null)} style={styles.modalOverlay}>
+          <div onClick={(e) => e.stopPropagation()} style={styles.modalContent}>
             <img
               src={`${API_BASE_URL}${selectedPlant.imageUrl}`}
               alt={selectedPlant.name}
-              style={{ width:"100%", maxHeight:"350px", objectFit:"contain", borderRadius:"10px", marginBottom:"15px" }}
-              onError={e => e.target.src="/fallback.png"}
+              style={{
+                width: "100%",
+                maxHeight: "350px",
+                objectFit: "contain",
+                borderRadius: "12px",
+                marginBottom: "15px",
+              }}
             />
-            <h2 id="modal-title" style={{ fontSize:"22px", marginBottom:"8px", color:"#2c3e50" }}>{selectedPlant.name}</h2>
-            {selectedPlant.category && <p style={{ fontSize:"14px", color:"#888", marginBottom:"8px", fontStyle:"italic" }}>{selectedPlant.category}</p>}
-            <p style={{ fontSize:"18px", color:"#27ae60", marginBottom:"12px" }}><strong>Rs. {selectedPlant.price}</strong></p>
-            <p style={{ fontSize:"15px", color:"#444", marginBottom:"20px", lineHeight:"1.6" }}>{selectedPlant.description || "No description available."}</p>
-            <button
-              onClick={() => setSelectedPlant(null)}
-              style={{ padding:"10px 20px", border:"none", borderRadius:"25px", background:"#e74c3c", color:"white", cursor:"pointer", fontWeight:"bold" }}
-              aria-label="Close plant details"
-            >❌ Close</button>
+            <h2>{selectedPlant.name}</h2>
+            <p style={{ fontSize: "18px", color: "#27ae60", margin: "8px 0" }}>
+              <strong>Rs. {selectedPlant.price}</strong>
+            </p>
+            <p>{selectedPlant.description || "No description available."}</p>
+            <button onClick={() => setSelectedPlant(null)} style={styles.closeButton}>
+              ❌ Close
+            </button>
           </div>
         </div>
       )}
