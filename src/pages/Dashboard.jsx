@@ -2,7 +2,7 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
-import { FaRobot, FaBars } from "react-icons/fa";
+import { FaRobot } from "react-icons/fa";
 import { removeToken } from "../utils/auth";
 
 // --- Fake Orders (outside component to avoid ESLint warnings) ---
@@ -25,34 +25,27 @@ const Wrapper = styled.div`
   min-height: 100vh;
   font-family: "Poppins", sans-serif;
   background: #f9fafb;
-
   @media (max-width: 768px) {
     flex-direction: column;
   }
 `;
 
 const Sidebar = styled.div`
-  width: ${(props) => (props.open ? "220px" : "0")};
-  overflow: hidden;
+  width: 250px;
   background: #1b5e20;
   color: white;
   display: flex;
   flex-direction: column;
-  padding: ${(props) => (props.open ? "20px" : "0")};
-  position: fixed;
+  padding: 20px;
+  position: sticky;
   top: 0;
-  left: 0;
   height: 100vh;
-  transition: 0.3s;
-  z-index: 1500;
-
   h2 {
     margin-bottom: 40px;
     font-size: 1.5rem;
     text-align: center;
     font-weight: 600;
   }
-
   a {
     color: white;
     text-decoration: none;
@@ -62,34 +55,22 @@ const Sidebar = styled.div`
     display: block;
     transition: 0.3s;
   }
-
   a:hover {
     background: rgba(255, 255, 255, 0.15);
   }
-
-  @media (min-width: 769px) {
-    position: sticky;
-    width: 250px;
-    padding: 20px;
-  }
-`;
-
-const SidebarToggle = styled.button`
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  z-index: 2001;
-  background: #1b5e20;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 10px;
-  font-size: 20px;
-  cursor: pointer;
-  display: none;
-
   @media (max-width: 768px) {
-    display: block;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    a {
+      margin-bottom: 0;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
   }
 `;
 
@@ -97,13 +78,6 @@ const Main = styled.div`
   flex: 1;
   padding: 20px 30px;
   position: relative;
-  margin-left: 250px;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-    padding: 80px 16px 20px;
-  }
 `;
 
 const AnnouncementBar = styled.div`
@@ -118,11 +92,11 @@ const AnnouncementBar = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
 `;
 
 const OrderNowButton = styled.button`
   padding: 6px 14px;
+  margin-left: 10px;
   border: none;
   border-radius: 20px;
   background: #1b5e20;
@@ -144,10 +118,8 @@ const Navbar = styled.div`
     font-size: 1.8rem;
     color: #1b5e20;
   }
-  @media (max-width: 480px) {
-    h1 {
-      font-size: 1.3rem;
-    }
+  @media (max-width: 768px) {
+    justify-content: space-between;
   }
 `;
 
@@ -169,7 +141,6 @@ const ProfileContainer = styled.div`
   span {
     font-weight: 600;
     color: #1b5e20;
-    font-size: 0.95rem;
   }
 `;
 
@@ -178,10 +149,6 @@ const CardGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
   margin-top: 20px;
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
 `;
 
 const Card = styled(Link)`
@@ -197,25 +164,24 @@ const Card = styled(Link)`
   text-decoration: none;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s;
-
   &::before {
     content: "";
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border-radius: 14px;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
     z-index: 0;
   }
-
   > * {
     position: relative;
     z-index: 1;
   }
-
   &:hover {
     transform: scale(1.03);
   }
-
   h3 {
     margin: 0 0 6px;
     font-size: 1.2rem;
@@ -223,6 +189,16 @@ const Card = styled(Link)`
   p {
     margin: 0;
     font-size: 0.85rem;
+  }
+  @media (max-width: 768px) {
+    height: 150px;
+    padding: 12px;
+    h3 {
+      font-size: 1rem;
+    }
+    p {
+      font-size: 0.75rem;
+    }
   }
 `;
 
@@ -290,24 +266,24 @@ const ChatBotButton = styled.button`
     transform: scale(1.1);
     background: #2e7d32;
   }
+  z-index: 1000;
 `;
 
 const ChatBotMessageBox = styled.div`
   position: fixed;
   bottom: 25px;
-  right: 95px;
+  right: 100px;
   background: #1b5e20;
   color: white;
   padding: 12px 18px;
   border-radius: 12px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  max-width: 220px;
+  max-width: 200px;
   text-align: center;
   animation: fadeIn 0.5s ease;
   z-index: 999;
-
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -318,8 +294,18 @@ const ChatBotMessageBox = styled.div`
       transform: translateY(0);
     }
   }
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    right: 20px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: #1b5e20 transparent transparent transparent;
+  }
 `;
 
+// 🚨 New Order Alert (top slide-in)
 const OrderAlert = styled.div`
   position: fixed;
   top: ${(props) => (props.show ? "20px" : "-100px")};
@@ -347,14 +333,9 @@ const OrderAlert = styled.div`
   }
 `;
 
+// --- Shop Section ---
 const ShopSection = styled.div`
   margin-top: 30px;
-`;
-
-const ProductGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 20px;
 `;
 
 const ProductCard = styled.div`
@@ -380,6 +361,7 @@ const ProductCard = styled.div`
     margin: 0;
     font-weight: 600;
     color: #1b5e20;
+    font-size: 1rem;
   }
   button {
     margin-top: 8px;
@@ -403,7 +385,33 @@ const API_BASE_URL =
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [featureCards] = useState([
+    {
+      to: "/identify",
+      bg: "/img2.jpg",
+      title: "🌿 Identify Plants",
+      desc: "Upload & recognize plant species",
+    },
+    {
+      to: "/disease-detect",
+      bg: "/img3.jpg",
+      title: "🦠 Disease Detection",
+      desc: "Detect leaf diseases instantly",
+    },
+    {
+      to: "/ChatBot",
+      bg: "/img4.jpg",
+      title: "🤖 AI Chat Bot",
+      desc: "Get AI-powered plant advice",
+    },
+    {
+      to: "/forum",
+      bg: "/img1.jpg",
+      title: "💬 Community Forum",
+      desc: "Chat with experts & users",
+    },
+  ]);
+
   const [communityMessages, setCommunityMessages] = useState([]);
   const [user, setUser] = useState({ name: "", photo: "" });
   const [showAlert, setShowAlert] = useState(false);
@@ -444,6 +452,7 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, [fetchProfile, fetchCommunityMessages]);
 
+  // 🚨 Show fake order alerts
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
@@ -455,56 +464,26 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleCommunityClick = () => navigate("/forum");
+  const handleProfileClick = () => navigate("/profile");
+  const handleChatBotClick = () => navigate("/ChatBot");
+
   const handleLogout = () => {
     removeToken();
     navigate("/login");
   };
 
-  const handleChatBotClick = () => navigate("/ChatBot");
-  const handleProfileClick = () => navigate("/profile");
-  const handleCommunityClick = () => navigate("/forum");
-
-  const featureCards = [
-    {
-      to: "/identify",
-      bg: "/img2.jpg",
-      title: "🌿 Identify Plants",
-      desc: "Upload & recognize plant species",
-    },
-    {
-      to: "/disease-detect",
-      bg: "/img3.jpg",
-      title: "🦠 Disease Detection",
-      desc: "Detect leaf diseases instantly",
-    },
-    {
-      to: "/ChatBot",
-      bg: "/img4.jpg",
-      title: "🤖 AI Chat Bot",
-      desc: "Get AI-powered plant advice",
-    },
-    {
-      to: "/forum",
-      bg: "/img1.jpg",
-      title: "💬 Community Forum",
-      desc: "Chat with experts & users",
-    },
-  ];
-
-  const topPlants = [
-    { id: 1, image: "/p1.jpg", name: "Aloe Vera" },
-    { id: 2, image: "/2.jpg", name: "Snake Plant" },
-    { id: 3, image: "/p3.jpg", name: "Peace Lily" },
-    { id: 4, image: "/p4.jpg", name: "Money Plant" },
-  ];
+  // ✅ Top selling plants
+  const [topPlants] = useState([
+    { id: 1, image: "/p1.jpg" },
+    { id: 2, image: "/2.jpg" },
+    { id: 3, image: "/p3.jpg" },
+    { id: 4, image: "/p4.jpg" },
+  ]);
 
   return (
     <Wrapper>
-      <SidebarToggle onClick={() => setSidebarOpen(!sidebarOpen)}>
-        <FaBars />
-      </SidebarToggle>
-
-      <Sidebar open={sidebarOpen}>
+      <Sidebar>
         <h2>PlantTaxa</h2>
         <Link to="/dashboard">🏠 Dashboard</Link>
         <Link to="/identify">🌿 Identify</Link>
@@ -517,6 +496,7 @@ const Dashboard = () => {
       </Sidebar>
 
       <Main>
+        {/* Announcement Bar */}
         <AnnouncementBar>
           <span>🚚 Free delivery available! Continue plant shopping now!</span>
           <OrderNowButton onClick={() => navigate("/PlantShop")}>
@@ -554,9 +534,16 @@ const Dashboard = () => {
           ))}
         </CardGrid>
 
+        {/* Top Selling Plants Section */}
         <ShopSection>
           <h2>🔥 Top Selling Plants</h2>
-          <ProductGrid>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "20px",
+            }}
+          >
             {topPlants.map((plant) => (
               <ProductCard key={plant.id}>
                 <img src={plant.image} alt={plant.name} />
@@ -566,16 +553,16 @@ const Dashboard = () => {
                 </button>
               </ProductCard>
             ))}
-          </ProductGrid>
+          </div>
         </ShopSection>
 
-        <ChatBotMessageBox>
-          🌿 Care your plants! Click here for AI help.
-        </ChatBotMessageBox>
+        {/* Chatbot & Floating Message */}
+        <ChatBotMessageBox>🌿 Care your plants! Click here for AI help.</ChatBotMessageBox>
         <ChatBotButton onClick={handleChatBotClick}>
           <FaRobot />
         </ChatBotButton>
 
+        {/* 🚨 Order Alert */}
         {currentOrder && (
           <OrderAlert show={showAlert}>
             <img src={currentOrder.avatar} alt={currentOrder.name} />
