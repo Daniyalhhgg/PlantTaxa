@@ -73,8 +73,8 @@ const ContactUs = () => {
             Drop us a message and we’ll get back shortly.
           </p>
           <ContactDetails>
-            <span>📧 f2021065221@umt.edu.pk</span>
-            <span>🌍 www.planttaxa.com</span>
+            <span>📧 dd275507@gmail.com</span>
+            <span>🌍 plant-taxaa.vercel.app</span>
           </ContactDetails>
         </InfoSection>
 
